@@ -15,6 +15,8 @@ void uart_set_clock();
  * The PL011 UART controller, this only handles basic read and write. 
  * Some good resources: 
  * https://raspberrypi.stackexchange.com/questions/45570/how-do-i-make-serial-work-on-the-raspberry-pi3-pizerow-pi4-or-later-models/107780#107780 
+ * https://github.com/ethanfaust/rpi4-baremetal-uart 
+ * https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-uarts 
  */
 template <
     uint32_t baseaddr, 
