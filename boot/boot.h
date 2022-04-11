@@ -1,5 +1,6 @@
 #pragma once 
 #include <stdint.h>
+#include <stdnoreturn.h>
 #ifdef __cplusplus
 extern "C" {
 #endif 
@@ -7,7 +8,7 @@ inline void dev_barrier() {
     asm volatile("dsb sy");
 }
 int main(void); 
-void rpi_reboot(void); 
+noreturn void rpi_reboot(void); 
 inline void put32(uintptr_t addr, uint32_t v) {
     *((volatile uint32_t *)addr) = v; 
 }
