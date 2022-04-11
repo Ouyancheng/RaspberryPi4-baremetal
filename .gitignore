@@ -1,0 +1,8 @@
+*.d
+*.list
+*.o
+*.elf
+*.a
+*.bin
+cmake-build-*
+build
