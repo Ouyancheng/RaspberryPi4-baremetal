@@ -1,0 +1,167 @@
+The target system is: Linux -  - arm64
+The host system is: Darwin - 21.5.0 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /Users/ouyancheng/homebrew/opt/llvm/bin/clang 
+Build flags: -Og;-Wall;-nostdlib;-ffreestanding;-mcpu=cortex-a72+nosimd;--target=aarch64-none-none-elf;-march=armv8-a;-Werror;-Wno-unused-function;-Wno-unused-variable;-std=gnu99;-Wno-pointer-sign;
+Id flags: -c 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
+
+The C compiler identification is Clang, found in "/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/3.23.0/CompilerIdC/CMakeCCompilerId.o"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /Users/ouyancheng/homebrew/opt/llvm/bin/clang++ 
+Build flags: -Og;-Wall;-nostdlib;-ffreestanding;-mcpu=cortex-a72+nosimd;--target=aarch64-none-none-elf;-march=armv8-a;-Werror;-Wno-unused-function;-Wno-unused-variable;-std=gnu++14;-fno-exceptions;-fno-unwind-tables;-fno-rtti
+Id flags: -c 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
+
+The CXX compiler identification is Clang, found in "/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/3.23.0/CompilerIdCXX/CMakeCXXCompilerId.o"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/Users/ouyancheng/homebrew/bin/ninja cmTC_d3e43 && [1/2] Building C object CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o
+Homebrew clang version 13.0.1
+Target: aarch64-none-none-elf
+Thread model: posix
+InstalledDir: /Users/ouyancheng/homebrew/opt/llvm/bin
+ (in-process)
+ "/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/bin/clang-13" -cc1 -triple aarch64-none-none-elf -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mframe-pointer=non-leaf -fmath-errno -fno-rounding-math -mconstructor-aliases -ffreestanding -target-cpu cortex-a72 -target-feature +neon -target-abi aapcs -fallow-half-arguments-and-returns -debugger-tuning=gdb -target-linker-version 711 -v -fcoverage-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -resource-dir /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk -c-isystem /Users/ouyancheng/homebrew/include -c-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -cxx-isystem /Users/ouyancheng/homebrew/include -cxx-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -Og -Wall -Wno-unused-variable -Wno-pointer-sign -std=gnu99 -fdebug-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -faddrsig -o CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o -x c /Users/ouyancheng/homebrew/Cellar/cmake/3.23.0/share/cmake/Modules/CMakeCCompilerABI.c
+clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin21.5.0
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/local/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/ouyancheng/homebrew/include
+ /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers
+ /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include
+End of search list.
+[2/2] Linking C static library libcmTC_d3e43.a
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Users/ouyancheng/homebrew/include]
+    add: [/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers]
+    add: [/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Users/ouyancheng/homebrew/include] ==> [/Users/ouyancheng/homebrew/include]
+  collapse include dir [/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers] ==> [/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers]
+  collapse include dir [/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include] ==> [/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+  implicit include dirs: [/Users/ouyancheng/homebrew/include;/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers;/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include;/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld\.lld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/Users/ouyancheng/homebrew/bin/ninja cmTC_d3e43 && [1/2] Building C object CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o]
+  ignore line: [Homebrew clang version 13.0.1]
+  ignore line: [Target: aarch64-none-none-elf]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/ouyancheng/homebrew/opt/llvm/bin]
+  ignore line: [ (in-process)]
+  ignore line: [ "/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/bin/clang-13" -cc1 -triple aarch64-none-none-elf -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model static -mframe-pointer=non-leaf -fmath-errno -fno-rounding-math -mconstructor-aliases -ffreestanding -target-cpu cortex-a72 -target-feature +neon -target-abi aapcs -fallow-half-arguments-and-returns -debugger-tuning=gdb -target-linker-version 711 -v -fcoverage-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -resource-dir /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk -c-isystem /Users/ouyancheng/homebrew/include -c-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -cxx-isystem /Users/ouyancheng/homebrew/include -cxx-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -Og -Wall -Wno-unused-variable -Wno-pointer-sign -std=gnu99 -fdebug-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-signed-char -fgnuc-version=4.2.1 -faddrsig -o CMakeFiles/cmTC_d3e43.dir/CMakeCCompilerABI.c.o -x c /Users/ouyancheng/homebrew/Cellar/cmake/3.23.0/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin21.5.0]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/local/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Users/ouyancheng/homebrew/include]
+  ignore line: [ /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers]
+  ignore line: [ /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+  ignore line: [End of search list.]
+  ignore line: [[2/2] Linking C static library libcmTC_d3e43.a]
+  ignore line: []
+  ignore line: []
+  implicit libs: []
+  implicit objs: []
+  implicit dirs: []
+  implicit fwks: []
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/Users/ouyancheng/homebrew/bin/ninja cmTC_89187 && [1/2] Building CXX object CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o
+Homebrew clang version 13.0.1
+Target: aarch64-none-none-elf
+Thread model: posix
+InstalledDir: /Users/ouyancheng/homebrew/opt/llvm/bin
+ (in-process)
+ "/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/bin/clang-13" -cc1 -triple aarch64-none-none-elf -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model static -mframe-pointer=non-leaf -fmath-errno -fno-rounding-math -mconstructor-aliases -ffreestanding -target-cpu cortex-a72 -target-feature +neon -target-abi aapcs -fallow-half-arguments-and-returns -debugger-tuning=gdb -target-linker-version 711 -v -fcoverage-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -resource-dir /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk -c-isystem /Users/ouyancheng/homebrew/include -c-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -cxx-isystem /Users/ouyancheng/homebrew/include -cxx-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -Og -Wall -Wno-unused-variable -std=gnu++14 -fdeprecated-macro -fdebug-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-rtti -fno-signed-char -fgnuc-version=4.2.1 -faddrsig -o CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o -x c++ /Users/ouyancheng/homebrew/Cellar/cmake/3.23.0/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin21.5.0
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/local/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/ouyancheng/homebrew/include
+ /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers
+ /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include
+End of search list.
+[2/2] Linking CXX static library libcmTC_89187.a
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Users/ouyancheng/homebrew/include]
+    add: [/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers]
+    add: [/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Users/ouyancheng/homebrew/include] ==> [/Users/ouyancheng/homebrew/include]
+  collapse include dir [/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers] ==> [/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers]
+  collapse include dir [/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include] ==> [/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+  implicit include dirs: [/Users/ouyancheng/homebrew/include;/Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers;/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include;/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld\.lld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/Users/ouyancheng/homebrew/bin/ninja cmTC_89187 && [1/2] Building CXX object CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [Homebrew clang version 13.0.1]
+  ignore line: [Target: aarch64-none-none-elf]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/ouyancheng/homebrew/opt/llvm/bin]
+  ignore line: [ (in-process)]
+  ignore line: [ "/Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/bin/clang-13" -cc1 -triple aarch64-none-none-elf -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model static -mframe-pointer=non-leaf -fmath-errno -fno-rounding-math -mconstructor-aliases -ffreestanding -target-cpu cortex-a72 -target-feature +neon -target-abi aapcs -fallow-half-arguments-and-returns -debugger-tuning=gdb -target-linker-version 711 -v -fcoverage-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -resource-dir /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk -c-isystem /Users/ouyancheng/homebrew/include -c-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -cxx-isystem /Users/ouyancheng/homebrew/include -cxx-isystem /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers -Og -Wall -Wno-unused-variable -std=gnu++14 -fdeprecated-macro -fdebug-compilation-dir=/Volumes/Data/workspaces/cs240lx-22spr/RaspberryPi4/boot/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fno-rtti -fno-signed-char -fgnuc-version=4.2.1 -faddrsig -o CMakeFiles/cmTC_89187.dir/CMakeCXXCompilerABI.cpp.o -x c++ /Users/ouyancheng/homebrew/Cellar/cmake/3.23.0/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin21.5.0]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/local/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Users/ouyancheng/homebrew/include]
+  ignore line: [ /Users/ouyancheng/homebrew/Frameworks/Python.framework/Headers]
+  ignore line: [ /Users/ouyancheng/homebrew/Cellar/llvm/13.0.1_1/lib/clang/13.0.1/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX12.sdk/usr/include]
+  ignore line: [End of search list.]
+  ignore line: [[2/2] Linking CXX static library libcmTC_89187.a]
+  ignore line: []
+  ignore line: []
+  implicit libs: []
+  implicit objs: []
+  implicit dirs: []
+  implicit fwks: []
+
+
+Checking whether the ASM compiler is Clang using "--version" matched "(clang version)":
+Homebrew clang version 13.0.1
+Target: x86_64-apple-darwin21.5.0
+Thread model: posix
+InstalledDir: /Users/ouyancheng/homebrew/opt/llvm/bin

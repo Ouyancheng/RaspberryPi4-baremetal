@@ -1,0 +1,37 @@
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /Users/ouyancheng/homebrew/opt/llvm/bin/clang 
+Build flags: -Og;-Wall;-nostdlib;-ffreestanding;-mcpu=cortex-a72+nosimd;--target=aarch64-none-none-elf;-march=armv8-a;-Werror;-Wno-unused-function;-Wno-unused-variable;-std=gnu99;-Wno-pointer-sign;
+Id flags:  
+
+The output was:
+1
+ld: warning: ignoring file /var/folders/lr/6c5n0m1x1514tz502d0qhkdc0000gn/T/CMakeCCompilerId-14d216.o, building for macOS-x86_64 but attempting to link with file built for unknown-unsupported file format ( 0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 )
+Undefined symbols for architecture x86_64:
+  "_main", referenced from:
+     implicit entry/start for main executable
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+clang-13: error: linker (via gcc) command failed with exit code 1 (use -v to see invocation)
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /Users/ouyancheng/homebrew/opt/llvm/bin/clang++ 
+Build flags: -Og;-Wall;-nostdlib;-ffreestanding;-mcpu=cortex-a72+nosimd;--target=aarch64-none-none-elf;-march=armv8-a;-Werror;-Wno-unused-function;-Wno-unused-variable;-std=gnu++14;-fno-exceptions;-fno-unwind-tables;-fno-rtti
+Id flags:  
+
+The output was:
+1
+ld: warning: ignoring file /var/folders/lr/6c5n0m1x1514tz502d0qhkdc0000gn/T/CMakeCXXCompilerId-0e03c3.o, building for macOS-x86_64 but attempting to link with file built for unknown-unsupported file format ( 0x7F 0x45 0x4C 0x46 0x02 0x01 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 )
+Undefined symbols for architecture x86_64:
+  "_main", referenced from:
+     implicit entry/start for main executable
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+clang-13: error: linker (via gcc) command failed with exit code 1 (use -v to see invocation)
+
+
+Checking whether the ASM compiler is GNU using "--version" did not match "(GNU assembler)|(GCC)|(Free Software Foundation)":
+Homebrew clang version 13.0.1
+Target: x86_64-apple-darwin21.5.0
+Thread model: posix
+InstalledDir: /Users/ouyancheng/homebrew/opt/llvm/bin
