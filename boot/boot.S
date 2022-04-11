@@ -32,6 +32,7 @@ bssclearloop:
 
 bootup: 
     bl main 
+    bl rpi_reboot
     b hang 
 
 

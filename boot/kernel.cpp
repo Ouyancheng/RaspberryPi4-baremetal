@@ -19,7 +19,9 @@ int main(void) {
 
     uart0.init(115200); 
     uart5.init(115200); 
-
+    int count = 0; 
+    gpio_set_on(20); 
+    delay_ms(500);
     gpio_set_off(20); 
     while (1) {
         // delay_ms(500); 
@@ -49,6 +51,10 @@ int main(void) {
         uart0.puts("Hello World!!! "); 
         uart0.send((const char)c); 
         uart0.send(' '); 
+        count += 1;
+        if (count > 10) {
+            break; 
+        }
     }
     return 0; 
 } 

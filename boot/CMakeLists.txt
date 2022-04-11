@@ -16,6 +16,7 @@ add_executable(${TARGET}.elf
     delay.c
     mbox.c 
     uart.cpp 
+    reboot.c
 )
 
 # target_include_directories(${TARGET}.elf PRIVATE "${LIBPI_ROOT}/include" "${LIBPI_ROOT}/libc" "${LIBPI_ROOT}/")
