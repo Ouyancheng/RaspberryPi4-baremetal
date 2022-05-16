@@ -43,7 +43,7 @@ int framebuffer_init(uint32_t physical_width,
     mbox[21] = MBOX_TAG_SETPXLORDR;
     mbox[22] = 4;
     mbox[23] = 4;
-    mbox[24] = 1;  // RGB
+    mbox[24] = 1;  // ARGB
 
     mbox[25] = MBOX_TAG_GETFB;
     mbox[26] = 8;
@@ -70,10 +70,23 @@ int framebuffer_init(uint32_t physical_width,
     }
     return -1;
 }
-
 void draw_pixel(int x, int y, unsigned char attr) {
     int offs = (y * pitch) + (x * 4);
     *((unsigned int*)(fb + offs)) = vgapal[attr & 0x0f];
+}
+void draw_rectangle_rgba(unsigned char *buffer, int x1, int y1, int x2, int y2, uint32_t r, uint32_t g, uint32_t b, uint32_t a, int fill) {
+    int y = y1;
+    while (y <= y2) {
+        int x = x1;
+        while (x <= x2) {
+            if ((x == x1 || x == x2) || (y == y1 || y == y2))
+                draw_pixel_rgba(buffer, x, y, r, g, b, a);
+            else if (fill)
+                draw_pixel_rgba(buffer, x, y, r, g, b, a);
+            x++;
+        }
+        y++;
+    }
 }
 
 void draw_rectangle(int x1, int y1, int x2, int y2, unsigned char attr, int fill) {
@@ -91,7 +104,6 @@ void draw_rectangle(int x1, int y1, int x2, int y2, unsigned char attr, int fill
         y++;
     }
 }
-
 void draw_line(int x1, int y1, int x2, int y2, unsigned char attr) {
     int dx, dy, p, x, y;
 
@@ -108,6 +120,27 @@ void draw_line(int x1, int y1, int x2, int y2, unsigned char attr) {
             p = p + 2 * dy - 2 * dx;
         } else {
             draw_pixel(x, y, attr);
+            p = p + 2 * dy;
+        }
+        x++;
+    }
+}
+void draw_line_rgba(unsigned char *buffer, int x1, int y1, int x2, int y2, uint32_t r, uint32_t g, uint32_t b, uint32_t a) {
+    int dx, dy, p, x, y;
+
+    dx = x2 - x1;
+    dy = y2 - y1;
+    x = x1;
+    y = y1;
+    p = 2 * dy - dx;
+
+    while (x < x2) {
+        if (p >= 0) {
+            draw_pixel_rgba(buffer, x, y, r, g, b, a);
+            y++;
+            p = p + 2 * dy - 2 * dx;
+        } else {
+            draw_pixel_rgba(buffer, x, y, r, g, b, a);
             p = p + 2 * dy;
         }
         x++;
