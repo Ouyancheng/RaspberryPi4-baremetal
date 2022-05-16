@@ -58,7 +58,7 @@ static void wait_for_data(unsigned usec_timeout) {
     }
 }
 
-uintptr_t uart_get_code(void) {
+uintptr_t uart_get_code(uintptr_t target_address) {
     while (1) {
         // 0. keep sending GET_PROG_INFO every 300ms until there's data
         wait_for_data(300 * 1000);
@@ -73,7 +73,7 @@ uintptr_t uart_get_code(void) {
             boot_put32(BOOT_ERROR);
             continue; 
         }
-        uintptr_t code_address = (uintptr_t)ARM64BASE; 
+        uintptr_t code_address = target_address; 
         // 3. If the binary will collide with us, abort. 
         //    you can assume that code must be below where the booloader code
         //    gap starts.

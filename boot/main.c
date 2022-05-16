@@ -29,7 +29,7 @@ int main(void) {
     //     delay_ms(1000); 
     // }
 
-    uintptr_t addr = uart_get_code(); 
+    uintptr_t addr = uart_get_code(0x180000); 
     if (!addr) {
         printf("boot failed!\n"); 
         rpi_reboot(); 

@@ -7,8 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif 
-// a properly aligned buffer
-extern volatile unsigned int mbox[36];
+// a properly aligned buffer (do we need to specify the attribute here, or just the definition is enough)
+extern volatile unsigned int __attribute__((aligned(16))) mbox[36];
 
 #define MBOX_REQUEST    0
 
@@ -33,6 +33,7 @@ extern volatile unsigned int mbox[36];
 #define MBOX_TAG_SETPXLORDR     0x48006 
 #define MBOX_TAG_GETFB          0x40001 
 #define MBOX_TAG_GETPITCH       0x40008 
+#define MBOX_TAG_LAST           0x00000
 int mbox_call(unsigned char ch);
 
 #ifdef __cplusplus

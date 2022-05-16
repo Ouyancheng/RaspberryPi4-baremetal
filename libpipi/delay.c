@@ -26,5 +26,7 @@ void delay_ms(unsigned ms) {
     delay_us(ms*1000);
 }
 void delay_sec(unsigned sec) {
-    delay_ms(sec*1000);
+    while (sec --> 0) {
+        delay_ms(1000);
+    }
 }
