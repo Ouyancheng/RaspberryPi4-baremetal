@@ -1,6 +1,6 @@
 SECTIONS
 {
-    . = 0x80000;     /* Kernel load address for AArch64 */
+    . = 0x180000;     /* Kernel load address for AArch64 */
     .text : { 
         PROVIDE(__code_start__ = .); 
         KEEP(*(.text.boot)) 

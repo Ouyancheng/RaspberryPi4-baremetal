@@ -1,4 +1,4 @@
-#include "boot.h"
+#include "common.h"
 /**
  * Set up the watchdog timer then don't feed it, 
  * and then the dog will bite and the system will reboot 

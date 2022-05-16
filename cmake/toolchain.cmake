@@ -26,10 +26,15 @@ set(TARGET_ARCH "armv8-a")
 # CLANGFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -mcpu=cortex-a72+nosimd 
 # -nostartfiles  in C_FLAGS + ASM_FLAGS? 
 set(C_FLAGS_COMMON                  "-Wall -nostdlib -ffreestanding -mcpu=${CPU_TYPE} --target=${TARGET_TRIPLET} -march=${TARGET_ARCH} -Werror -Wno-unused-function -Wno-unused-variable")
-set(CMAKE_C_FLAGS                   "-Og ${C_FLAGS_COMMON} -std=gnu99 -Wno-pointer-sign ")
-set(CMAKE_C_FLAGS_RELEASE           "-O3 -DNDEBUG ${C_FLAGS_COMMON} -std=gnu99 -Wno-pointer-sign ")
-set(CMAKE_CXX_FLAGS                 "-Og ${C_FLAGS_COMMON} -std=gnu++14 -fno-exceptions -fno-unwind-tables -fno-rtti")
-set(CMAKE_CXX_FLAGS_RELEASE         "-O3 -DNDEBUG ${C_FLAGS_COMMON} -std=gnu++14 -fno-exceptions -fno-unwind-tables -fno-rtti")
+set(CMAKE_C_FLAGS                   "-Og ${C_FLAGS_COMMON} -std=gnu11 -Wno-pointer-sign ")
+set(CMAKE_C_FLAGS_RELEASE           "-O3 -DNDEBUG ${C_FLAGS_COMMON} -std=gnu11 -Wno-pointer-sign ")
+set(CMAKE_CXX_FLAGS                 "-Og ${C_FLAGS_COMMON} -std=gnu++17 -fno-exceptions -fno-unwind-tables -fno-rtti")
+set(CMAKE_CXX_FLAGS_RELEASE         "-O3 -DNDEBUG ${C_FLAGS_COMMON} -std=gnu++17 -fno-exceptions -fno-unwind-tables -fno-rtti")
 set(CMAKE_ASM_FLAGS                 "-nostdlib -ffreestanding --target=${TARGET_TRIPLET} -Wa,--fatal-warnings -Wa,-mcpu=${CPU_TYPE} -Wa,-march=${TARGET_ARCH} ")
+
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
