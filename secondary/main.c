@@ -7,7 +7,7 @@
 #include "c_string.h"
 uint32_t scratch_buffer[256][240]; 
 void int_to_dec_str(char *buf, unsigned n) {
-    char buffer[10]; 
+    char buffer[12]; 
     int i = 0;
     if (n == 0) {
         buf[0] = '0'; 
@@ -47,11 +47,9 @@ int main(void) {
     printf("press any key to continue...\n"); 
     dev_barrier(); 
     int t = 0; 
-    // printf("outer function: fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
     int time_used = 0;
     int cnt;
     while (!uart_has_data(UART0_BASE)) {
-        // printf("outer function1: fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
         unsigned now = get_current_time_us(); 
         for (int i = 10; i < width; i += 1) {
             for (int j = 10; j < height; j += 1) {
@@ -60,27 +58,18 @@ int main(void) {
             }
         }
         // memcpy(fb, scratch_buffer, width*height*4); 
-        char buf[10]; 
-        memset(buf, 0, 10); 
+        char buf[12]; 
+        memset(buf, 0, 12); 
         // sprintf(buf, "%d", time_used); 
         int_to_dec_str(buf, time_used); 
-        // printf("%s\n", buf); 
         draw_string(2, 2, buf, 0x0f); 
-        // int ret; 
-        // if ((ret=framebuffer_display_and_swap()) != 0) {
-        //     printf("framebuffer swap failed! ret=%d \n", ret); 
-        //     printf("123456\n");
-        //     return 1; 
-        // } 
         t += 1; 
-        cnt = 0;//get_current_time_us()-now; 
+        cnt = 0; 
         time_used = get_current_time_us()-now; 
-        // // 1000000/60 = 16666
+        // 1000000/60 = 16666
         while (get_current_time_us() - now < 16666) {
             cnt += 1; 
         }
-        // printf("cnt=%d time_used=%d\n", cnt, time_used); 
-        // delay_sec(1);
     }
     return 0; 
 } 
