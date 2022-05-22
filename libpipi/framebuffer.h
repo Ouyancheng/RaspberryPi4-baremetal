@@ -2,16 +2,16 @@
 #include <stdint.h>
 // pixel order is R,G,B 
 extern unsigned char* fb; 
+extern unsigned char *fb1;
+extern unsigned char *fb2; 
 extern unsigned int width, height, pitch, isrgb; 
 int framebuffer_init(
     uint32_t physical_width, 
     uint32_t physical_height, 
-    uint32_t virtual_width, 
-    uint32_t virtual_height,
-    uint32_t virtual_offset_width, 
-    uint32_t virtual_offset_height, 
     uint32_t bits_per_pixel 
 );
+/// NOTE: this function does not work right now... don't know why... 
+int framebuffer_display_and_swap(); 
 void draw_pixel(int x, int y, unsigned char attr);
 static inline void draw_pixel_rgba(unsigned char *buffer, int x, int y, uint32_t r, uint32_t g, uint32_t b, uint32_t a) {
     int offs = (y * pitch) + (x * 4); 

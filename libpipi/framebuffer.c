@@ -5,14 +5,14 @@
 #include "framebuffer.h"
 #include "mbox.h"
 #include "terminal.h"
+#include "c_string.h"
+#include "printf.h"
 unsigned int width, height, pitch, isrgb;
 unsigned char* fb;
+unsigned char *fb1;
+unsigned char *fb2; 
 int framebuffer_init(uint32_t physical_width,
                      uint32_t physical_height,
-                     uint32_t virtual_width,
-                     uint32_t virtual_height,
-                     uint32_t virtual_offset_width,
-                     uint32_t virtual_offset_height,
                      uint32_t bits_per_pixel) {
     mbox[0] = 35 * 4;  // Length of message in bytes
     mbox[1] = MBOX_REQUEST;
@@ -22,6 +22,11 @@ int framebuffer_init(uint32_t physical_width,
     mbox[4] = 0;
     mbox[5] = physical_width;   // Value(width)
     mbox[6] = physical_height;  // Value(height)
+
+    uint32_t virtual_width = physical_width;
+    uint32_t virtual_height = physical_height; // 2 * physical_height; 
+    uint32_t virtual_offset_width = 0;
+    uint32_t virtual_offset_height = 0; 
 
     mbox[7] = MBOX_TAG_SETVIRTWH;
     mbox[8] = 8;
@@ -66,10 +71,51 @@ int framebuffer_init(uint32_t physical_width,
         pitch = mbox[33];        // Number of bytes per line
         isrgb = mbox[24];        // Pixel order
         fb = (unsigned char*)((long)mbox[28]);
+        // fb1 = (unsigned char*)((long)mbox[28]);
+        // fb2 = fb1 + (width * height)*sizeof(unsigned int); 
+        // fb = fb2; 
+        // printf("fb init success! width = %d height = %d fb1=%p, fb2=%p, fb=%p\n", width, height, fb1, fb2, fb); 
         return 0;
     }
     return -1;
 }
+
+int framebuffer_display_and_swap() {
+    // memset((char*)mbox, 0, 36*sizeof(unsigned int));
+    unsigned current_fb = 0; 
+    unsigned char *nextfb; 
+    printf("fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
+    if (fb == fb1) {
+        current_fb = 0; 
+        nextfb = fb2; 
+    } else if (fb == fb2) {
+        current_fb = 1; 
+        nextfb = fb1; 
+    } else {
+        fb = fb1; 
+        return -2; 
+    }
+    (void)current_fb;
+    printf("currentfb * height=%d\n", current_fb * height);
+    mbox[0] = 8 * 4; 
+    mbox[1] = MBOX_REQUEST; 
+    // set virtual offset 
+    mbox[2] = MBOX_TAG_SETVIRTOFF;
+    mbox[3] = 8;
+    mbox[4] = 8;
+    mbox[5] = 0;   // Value(x)
+    mbox[6] = current_fb * height;  // Value(y)
+    mbox[7] = MBOX_TAG_LAST; 
+    printf("about to mailbox!\n");
+    dev_barrier(); 
+    if (mbox_call(MBOX_CH_PROP)) {
+        printf("prev fb=%p, setting fb=%p\n", fb, nextfb);
+        fb = nextfb; 
+        return 0; 
+    }
+    return -1; 
+}
+
 void draw_pixel(int x, int y, unsigned char attr) {
     int offs = (y * pitch) + (x * 4);
     *((unsigned int*)(fb + offs)) = vgapal[attr & 0x0f];
