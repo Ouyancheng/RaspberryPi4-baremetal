@@ -115,7 +115,10 @@ int framebuffer_display_and_swap() {
     }
     return -1; 
 }
-
+// void draw_pixel_rgba(unsigned char *buffer, int x, int y, uint32_t r, uint32_t g, uint32_t b, uint32_t a) {
+//     int offs = (y * pitch) + (x * 4); 
+//     *((uint32_t*)(buffer + offs)) = ((a << 24) | (r << 16) | (g << 8) | b); 
+// }
 void draw_pixel(int x, int y, unsigned char attr) {
     int offs = (y * pitch) + (x * 4);
     *((unsigned int*)(fb + offs)) = vgapal[attr & 0x0f];

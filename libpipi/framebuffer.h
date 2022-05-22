@@ -17,6 +17,7 @@ static inline void draw_pixel_rgba(unsigned char *buffer, int x, int y, uint32_t
     int offs = (y * pitch) + (x * 4); 
     *((uint32_t*)(buffer + offs)) = ((a << 24) | (r << 16) | (g << 8) | b); 
 }
+// void draw_pixel_rgba(unsigned char *buffer, int x, int y, uint32_t r, uint32_t g, uint32_t b, uint32_t a); 
 void draw_char(unsigned char ch, int x, int y, unsigned char attr);
 void draw_string(int x, int y, char *s, unsigned char attr);
 void draw_rectangle(int x1, int y1, int x2, int y2, unsigned char attr, int fill);

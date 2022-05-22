@@ -26,7 +26,7 @@ set(TARGET_ARCH "armv8-a")
 # CLANGFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -mcpu=cortex-a72+nosimd 
 # -nostartfiles  in C_FLAGS + ASM_FLAGS? 
 set(C_FLAGS_COMMON                  "-Wall -nostdlib -ffreestanding -mcpu=${CPU_TYPE} --target=${TARGET_TRIPLET} -march=${TARGET_ARCH} -Werror -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable")
-set(CMAKE_C_FLAGS                   "-O3 ${C_FLAGS_COMMON} -std=gnu11 -Wno-pointer-sign ")
+set(CMAKE_C_FLAGS                   "-O3 ${C_FLAGS_COMMON} -std=gnu11 -Wno-pointer-sign -flto ")
 set(CMAKE_C_FLAGS_RELEASE           "-Os -DNDEBUG ${C_FLAGS_COMMON} -std=gnu11 -Wno-pointer-sign ")
 set(CMAKE_CXX_FLAGS                 "-O3 ${C_FLAGS_COMMON} -std=gnu++17 -fno-exceptions -fno-unwind-tables -fno-rtti")
 set(CMAKE_CXX_FLAGS_RELEASE         "-Os -DNDEBUG ${C_FLAGS_COMMON} -std=gnu++17 -fno-exceptions -fno-unwind-tables -fno-rtti")

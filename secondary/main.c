@@ -6,6 +6,24 @@
 #include "framebuffer.h"
 #include "c_string.h"
 uint32_t scratch_buffer[256][240]; 
+void int_to_dec_str(char *buf, unsigned n) {
+    char buffer[10]; 
+    int i = 0;
+    if (n == 0) {
+        buf[0] = '0'; 
+        buf[1] = 0; 
+        return; 
+    }
+    while (n) {
+        buffer[i++] = '0' + (n % 10); 
+        n /= 10; 
+    }
+    int j = 0; 
+    while (i --> 0) {
+        buf[j++] = buffer[i]; 
+    }
+    buf[j] = 0; 
+}
 int main(void) {
     gpio_set_function(20, GPIO_FUNC_OUTPUT); 
     gpio_set_function(4, GPIO_FUNC_OUTPUT); 
@@ -30,18 +48,24 @@ int main(void) {
     dev_barrier(); 
     int t = 0; 
     // printf("outer function: fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
+    int time_used = 0;
+    int cnt;
     while (!uart_has_data(UART0_BASE)) {
         // printf("outer function1: fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
         unsigned now = get_current_time_us(); 
-        for (int i = 0; i < width; i += 1) {
-            for (int j = 0; j < height; j += 1) {
-                draw_pixel_rgba((unsigned char*)scratch_buffer, i, j, (t+i+j)&0xff, (t+i)&0xff, (t+j)&0xff, 0x0); 
+        for (int i = 10; i < width; i += 1) {
+            for (int j = 10; j < height; j += 1) {
+                draw_pixel_rgba((unsigned char*)fb, i, j, (t+i+j)&0xff, (t+i)&0xff, (t+j)&0xff, 0x0); 
+                // draw_pixel(i, j, (0x0e + t + i + j)&0xff); 
             }
         }
-        // printf("outer function2: fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
-        // memset(fb, (t)&0xff, width*height*sizeof(uint32_t)); 
-        memcpy(fb, scratch_buffer, width*height*4); 
-        // printf("outer function3: fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
+        // memcpy(fb, scratch_buffer, width*height*4); 
+        char buf[10]; 
+        memset(buf, 0, 10); 
+        // sprintf(buf, "%d", time_used); 
+        int_to_dec_str(buf, time_used); 
+        // printf("%s\n", buf); 
+        draw_string(2, 2, buf, 0x0f); 
         // int ret; 
         // if ((ret=framebuffer_display_and_swap()) != 0) {
         //     printf("framebuffer swap failed! ret=%d \n", ret); 
@@ -49,12 +73,13 @@ int main(void) {
         //     return 1; 
         // } 
         t += 1; 
-        int cnt = 0; 
-        // 1000000/60 = 16666
+        cnt = 0;//get_current_time_us()-now; 
+        time_used = get_current_time_us()-now; 
+        // // 1000000/60 = 16666
         while (get_current_time_us() - now < 16666) {
             cnt += 1; 
         }
-        // printf("cnt=%d diff=%d\n", cnt, get_current_time_us()-now); 
+        // printf("cnt=%d time_used=%d\n", cnt, time_used); 
         // delay_sec(1);
     }
     return 0; 
