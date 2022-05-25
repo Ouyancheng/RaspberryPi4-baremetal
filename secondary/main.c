@@ -48,7 +48,7 @@ int main(void) {
     dev_barrier(); 
     int t = 0; 
     int time_used = 0;
-    int cnt;
+    int cnt = 0; 
     while (!uart_has_data(UART0_BASE)) {
         unsigned now = get_current_time_us(); 
         for (int i = 10; i < width; i += 1) {
@@ -61,7 +61,7 @@ int main(void) {
         char buf[12]; 
         memset(buf, 0, 12); 
         // sprintf(buf, "%d", time_used); 
-        int_to_dec_str(buf, time_used); 
+        int_to_dec_str(buf, cnt); 
         draw_string(2, 2, buf, 0x0f); 
         t += 1; 
         cnt = 0; 

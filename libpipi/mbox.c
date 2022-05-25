@@ -23,7 +23,7 @@ int mbox_call(unsigned char ch) {
     dev_barrier(); 
     // wait until we can write to the mailbox
     do {
-        asm volatile("nop");
+        asm volatile("nop":::"memory");
         // printf("a");
         // dev_barrier();
     } while(*MBOX_STATUS & MBOX_FULL);
@@ -34,7 +34,7 @@ int mbox_call(unsigned char ch) {
     while (1) {
         // is there a response?
         do {
-            asm volatile("nop");
+            asm volatile("nop":::"memory");
             // dev_barrier();
         } while(*MBOX_STATUS & MBOX_EMPTY);
         // is it a response to our message?

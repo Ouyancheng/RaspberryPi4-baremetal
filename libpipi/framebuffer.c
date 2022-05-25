@@ -62,7 +62,7 @@ int framebuffer_init(uint32_t physical_width,
     mbox[33] = 0;  // Bytes per line
 
     mbox[34] = MBOX_TAG_LAST;
-
+    asm volatile ("nop" ::: "memory"); 
     // Check call is successful and we have a pointer with depth 32
     if (mbox_call(MBOX_CH_PROP) && mbox[20] == 32 && mbox[28] != 0) {
         mbox[28] &= 0x3FFFFFFF;  // Convert GPU address to ARM address
@@ -106,6 +106,7 @@ int framebuffer_display_and_swap() {
     mbox[5] = 0;   // Value(x)
     mbox[6] = current_fb * height;  // Value(y)
     mbox[7] = MBOX_TAG_LAST; 
+    asm volatile ("nop" ::: "memory"); 
     printf("about to mailbox!\n");
     dev_barrier(); 
     if (mbox_call(MBOX_CH_PROP)) {
