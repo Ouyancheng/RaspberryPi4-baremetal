@@ -1,9 +1,8 @@
 #include "cpu.h"
 
-uint8_t nes_memory[ADDR_MAX+1]; 
 struct cpustate cpu; 
 #define SP_RESET 0xFD 
-#define INLINE_OP 1 
+// #define INLINE_OP 1 
 #ifdef INLINE_OP
 #   define INLINE static inline
 #else 
@@ -34,7 +33,7 @@ void cpu_init(void) {
     cpu.p = 0b00100100; 
     cpu.pc = 0;
     cpu.sp = SP_RESET; 
-    memset(nes_memory, 0, ADDR_MAX+1); 
+    // memset((uint8_t*)cpu_ram, 0, CPU_RAM_SIZE); 
 }
 /// get the address from addressing mode, NOTE: pc is pointing at the next byte 
 uint16_t get_address(enum addressmode mode) {
@@ -400,14 +399,14 @@ INLINE void branch(uint8_t condition) {
 void cpu_load_program(uint8_t *program, size_t length) {
 #if 0 
     memcpy(
-        ((uint8_t*)nes_memory) + 0x8000, 
+        ((uint8_t*)cpu_ram) + 0x8000, 
         program,
         length
     ); 
     cpu_mem_write16(UINT16_C(0xFFFC), UINT16_C(0x8000)); 
 #endif 
     memcpy(
-        ((uint8_t*)nes_memory) + 0x0600, 
+        ((uint8_t*)cpu_ram) + 0x0600, 
         program,
         length
     ); 
@@ -432,7 +431,7 @@ void cpu_run_with_callback(void(*func)(void)) {
         uint8_t opcode = cpu_mem_read(cpu.pc); 
         // printf("step pc = %04x opcode=0x%02x\n", cpu.pc, opcode); 
         cpu.pc += 1; 
-        uint16_t pc_state = cpu.pc; 
+        uint16_t pc_backup = cpu.pc; 
         struct cpu_opcode op = opcodes[opcode]; 
         if (!op.length) {
             printf("Error: cpu_run unknown opcode %x\n", opcode); 
@@ -672,8 +671,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         case 0x6c: {
             uint16_t mem_address = cpu_mem_read16(cpu.pc);
             // let indirect_ref = self.mem_read_u16(mem_address);
-            //6502 bug mode with with page boundary:
-            //  if address $3000 contains $40, $30FF contains $80, and $3100 contains $50,
+            // 6502 bug mode with with page boundary:
+            // if address $3000 contains $40, $30FF contains $80, and $3100 contains $50,
             // the result of JMP ($30FF) will be a transfer of control to $4080 rather than $5080 as you intended
             // i.e. the 6502 took the low byte of the address from $30FF and the high byte from $3000
 
@@ -850,7 +849,7 @@ void cpu_run_with_callback(void(*func)(void)) {
             printf("Error: cpu_run unhandled opcode %x\n", opcode); 
             break; 
         }
-        if (pc_state == cpu.pc) {
+        if (pc_backup == cpu.pc) {
             cpu.pc += (uint16_t)(op.length - 1); 
         }
         func(); 

@@ -14,6 +14,8 @@ set(nes_code_files
     cpu_opcodes.c
     main.c 
     sdk.c 
+    bus.c 
+    rom.c 
 )
 if (NOT DEFINED UNIX)
     add_library(${TARGET} 

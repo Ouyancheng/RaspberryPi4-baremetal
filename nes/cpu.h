@@ -1,6 +1,7 @@
 #pragma once 
 #include "sdk.h"
 #include "cpu_opcodes.h"
+#include "bus.h"
 enum cpuflags {
     flag_carry             = UINT8_C(0b00000001),
     flag_zero              = UINT8_C(0b00000010),
@@ -22,16 +23,15 @@ struct cpustate {
     uint8_t  sp; 
 };
 
-#define ADDR_MAX 0xFFFF 
-
-extern uint8_t nes_memory[ADDR_MAX+1]; 
 extern struct cpustate cpu; 
 
 static inline uint8_t cpu_mem_read(uint16_t addr) {
-    return nes_memory[addr]; 
+    // return nes_memory[addr]; 
+    return bus_read(addr); 
 }
 static inline void cpu_mem_write(uint16_t addr, uint8_t value) {
-    nes_memory[addr] = value; 
+    // nes_memory[addr] = value; 
+    bus_write(addr, value); 
 }
 
 static inline uint16_t cpu_mem_read16(uint16_t addr) {

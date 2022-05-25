@@ -106,16 +106,16 @@ void handle_input(void) {
         // SDL_Keysym keysym = key.keysym; 
         SDL_Keycode keycode = e.key.keysym.sym; 
         if (keycode == SDLK_w) {
-            printf("w\n"); 
+            // printf("w\n"); 
             cpu_mem_write(0xff, 0x77); 
         } else if (keycode == SDLK_a) {
-            printf("a\n"); 
+            // printf("a\n"); 
             cpu_mem_write(0xff, 0x61); 
         } else if (keycode == SDLK_s) {
-            printf("s\n"); 
+            // printf("s\n"); 
             cpu_mem_write(0xff, 0x73); 
         } else if (keycode == SDLK_d) {
-            printf("d\n"); 
+            // printf("d\n"); 
             cpu_mem_write(0xff, 0x64); 
         } else if (keycode == SDLK_ESCAPE) {
             exit(0); 
@@ -282,15 +282,31 @@ int main(void) {
     SDL_RenderSetScale(renderer, 10.0, 10.0); 
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
-    // while (1) {
-    //     handle_input(); 
-    //     read_screen_state(); 
-    // }
 
+    // cpu_init(); 
+    // cpu_load_program((uint8_t*)snake_game, sizeof(snake_game)); 
+    // cpu_reset(); 
+    // cpu_run_with_callback(callback); 
+
+    FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
+    if (!romfile) {
+        panic("romfile %s not found!\n", "../snake.nes"); 
+    }
+    size_t romsize; 
+    fseek(romfile , 0L , SEEK_END);
+    romsize = ftell(romfile);
+    rewind(romfile); 
+    if (fread((uint8_t*)rom_bytes, romsize, 1, romfile) != 1) {
+        panic("rom file read failed!\n"); 
+    }
+    fclose(romfile); 
+
+    struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
+    bus_init(rom); 
     cpu_init(); 
-    cpu_load_program((uint8_t*)snake_game, sizeof(snake_game)); 
     cpu_reset(); 
     cpu_run_with_callback(callback); 
+    
     printf("Done!!!\n"); 
     return 0; 
 }
