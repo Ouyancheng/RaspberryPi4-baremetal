@@ -28,12 +28,14 @@ int panic_at(const char *file, int line, const char *function, const char *forma
 
 static inline uint8_t set_mask(uint8_t reg, uint8_t mask) {
     reg |= mask; 
+    return reg; 
 }
 static inline uint8_t clear_mask(uint8_t reg, uint8_t mask) {
     reg &= (~mask); 
+    return reg; 
 }
 #define set_mask_inplace(reg, mask) ((reg) |= ((uint8_t)(mask)))
-#define clea_mask_inplace(reg, mask) ((reg) &= (~((uint8_t)(mask))))
+#define clear_mask_inplace(reg, mask) ((reg) &= (~((uint8_t)(mask))))
 #endif 
 
 

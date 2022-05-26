@@ -24,14 +24,11 @@ struct ppu_device {
     uint8_t ctrl; 
     uint8_t mask; 
     uint8_t status; 
+    uint8_t oam_addr; 
     uint8_t buffer; 
 };
 
 extern struct ppu_device ppu; 
-
-void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror); 
-void ppu_addr_write(uint8_t data); 
-void ppu_addr_reset_state(void); 
 
 enum ppu_control_flags {
     ppu_ctrl_nametable1              = 0b00000001, 
@@ -73,11 +70,22 @@ struct rgb {
     uint8_t b; 
 };
 
+void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror); 
+void ppu_write_addr(uint8_t data); 
+void ppu_reset_addr_state(void); 
 uint8_t ppu_read_data(void); 
 void ppu_write_data(uint8_t data); 
 struct rgb ppu_mask_get_color_emphasis(void); 
-void ppu_scroll_write(uint8_t value); 
-void ppu_scroll_reset_state(void); 
+void ppu_write_scroll(uint8_t value); 
+void ppu_reset_scroll_state(void); 
+void ppu_write_ctrl(uint8_t value);
+void ppu_write_mask(uint8_t value);
+void ppu_write_oam_addr(uint8_t value);
+uint8_t ppu_read_oam_data(void);
+void ppu_write_oam_data(uint8_t value);
+uint8_t ppu_read_status(void); 
+void ppu_oam_dma(uint8_t *data, unsigned data_size); 
+
 
 
 

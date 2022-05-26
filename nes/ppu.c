@@ -17,9 +17,10 @@ void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror) {
     ppu.ctrl = 0; 
     ppu.mask = 0; 
     ppu.status = 0; 
+    ppu.oam_addr = 0; 
     ppu.buffer = 0; 
 }
-void ppu_addr_write(uint8_t data) {
+void ppu_write_addr(uint8_t data) {
     if (ppu.addr.reading_lo) {
         ppu.addr.value &= 0xFF00; 
         ppu.addr.value |= (uint16_t)data; 
@@ -34,7 +35,7 @@ static inline void ppu_addr_increment(uint8_t inc) {
     ppu.addr.value += (uint16_t)inc; 
     ppu.addr.value &= 0x3fff; 
 }
-void ppu_addr_reset_state(void) {
+void ppu_reset_addr_state(void) {
     ppu.addr.reading_lo = 0; 
 }
 static inline void ppu_vram_addr_increment(void) {
@@ -97,7 +98,7 @@ struct rgb ppu_mask_get_color_emphasis(void) {
     result.b = !!(ppu.mask & ppu_mask_emphasize_blue);
     return result; 
 }
-void ppu_scroll_write(uint8_t value) {
+void ppu_write_scroll(uint8_t value) {
     if (ppu.scroll.reading_y) {
         ppu.scroll.y = value; 
     } else {
@@ -105,7 +106,37 @@ void ppu_scroll_write(uint8_t value) {
     }
     ppu.scroll.reading_y = !ppu.scroll.reading_y; 
 }
-void ppu_scroll_reset_state(void) {
+void ppu_reset_scroll_state(void) {
     ppu.scroll.reading_y = 0; 
 }
+void ppu_write_ctrl(uint8_t value) {
+    ppu.ctrl = value; 
+}
+void ppu_write_mask(uint8_t value) {
+    ppu.mask = value; 
+}
+void ppu_write_oam_addr(uint8_t value) {
+    ppu.oam_addr = value; 
+}
+uint8_t ppu_read_oam_data(void) {
+    return ppu.oam_data[ppu.oam_addr];  
+}
+void ppu_write_oam_data(uint8_t value) {
+    ppu.oam_data[ppu.oam_addr] = value; 
+    ppu.oam_addr += 1; 
+}
+uint8_t ppu_read_status(void) {
+    uint8_t s = ppu.status; 
+    clear_mask_inplace(ppu.status, ppu_status_vblank_started); 
+    ppu_reset_addr_state(); 
+    ppu_reset_scroll_state(); 
+    return s; 
+}
+void ppu_oam_dma(uint8_t *data, unsigned data_size) {
+    for (unsigned i = 0; i < data_size; ++i) {
+        ppu.oam_data[ppu.oam_addr] = data[i]; 
+        ppu.oam_addr += 1; 
+    }
+}
+
 

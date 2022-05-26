@@ -20,8 +20,10 @@ uint8_t bus_read(uint16_t addr) {
             return ppu_read_data(); 
         } else if (actual_addr == 0x2004) {
             // OAM data 
+            return ppu_read_oam_data(); 
         } else if (actual_addr == 0x2002) {
             // status 
+            return ppu_read_status(); 
         } else {
             panic("reading invalid ppu register %04x\n", addr); 
         }
@@ -46,25 +48,30 @@ void bus_write(uint16_t addr, uint8_t value) {
         switch (actual_addr) {
             case 0x2000:
                 // ctrl 
+                ppu_write_ctrl(value); 
                 break; 
             case 0x2001:
                 // mask 
+                ppu_write_mask(value); 
                 break; 
             case 0x2002: 
                 panic("the ppu status register is read-only! addr=%04x\n", addr); 
                 break; 
             case 0x2003: 
                 // OAM addr 
+                ppu_write_oam_addr(value); 
                 break; 
             case 0x2004: 
                 // OAM data 
+                ppu_write_oam_data(value); 
                 break; 
             case 0x2005: 
                 // scroll 
+                ppu_write_scroll(value); 
                 break; 
             case 0x2006: 
                 // ppu addr 
-                ppu_addr_write(value); 
+                ppu_write_addr(value); 
                 break; 
             case 0x2007: 
                 // ppu data 
