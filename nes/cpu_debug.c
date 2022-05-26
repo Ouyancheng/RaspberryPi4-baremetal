@@ -66,7 +66,7 @@ void dump_cpu(void) {
             break; 
         case addressmode_relative: 
             // branches 
-            cprinted += printf("$%04X", cpu.pc + 2 + (uint16_t)literal_address);
+            cprinted += printf("$%04X", ((int16_t)cpu.pc + 2 + (int16_t)((int8_t)literal_address)) & 0xFFFF);
             break; 
         case addressmode_indirect: 
             // jump indirect 
@@ -95,3 +95,15 @@ void dump_cpu(void) {
     printf("\n"); 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+

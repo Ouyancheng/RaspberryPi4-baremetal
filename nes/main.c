@@ -316,8 +316,9 @@ int main(void) {
     bus_init(rom); 
     cpu_init(); 
     cpu_reset(); 
-    cpu.pc = 0xC000; // hack 
+    
     // cpu_run_with_callback(callback); 
+    cpu.pc = 0xC000; // hack 
     cpu_run_with_callback(dump_cpu); 
     
     printf("Done!!!\n"); 

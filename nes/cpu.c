@@ -469,7 +469,7 @@ void cpu_run_with_callback(void(*func)(void)) {
             inx(); 
             break; 
         case 0x00: // BRK 
-            printf("BRK occurred at pc=0x%04x\n", cpu.pc); 
+            // printf("BRK occurred at pc=0x%04x\n", cpu.pc); 
             return; 
         
         case 0xd8: // CLD 
@@ -858,6 +858,350 @@ void cpu_run_with_callback(void(*func)(void)) {
             update_flags_zn(cpu.a);
             break; 
 
+
+        /* unofficial */
+
+        /// Source: https://github.com/bugzmanov/nes_ebook/blob/master/code/ch5.1/src/cpu.rs
+
+        /* DCP */
+        case 0xc7: 
+        case 0xd7: 
+        case 0xcf: 
+        case 0xdf: 
+        case 0xdb: 
+        case 0xd3: 
+        case 0xc3: 
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            data -= 1; 
+            cpu_mem_write(addr, data); 
+            if (data <= cpu.a) {
+                set_carry(); 
+            }
+            update_flags_zn(cpu.a - data); 
+            break; 
+        }
+
+        /* RLA */
+        case 0x27: 
+        case 0x37: 
+        case 0x2F: 
+        case 0x3F: 
+        case 0x3b: 
+        case 0x33: 
+        case 0x23: 
+        {
+            uint8_t data = rol(op.addrmode); 
+            set_A(data & cpu.a); 
+            break; 
+        }
+
+        /* SLO */ //todo tests
+        case 0x07: 
+        case 0x17: 
+        case 0x0F: 
+        case 0x1f: 
+        case 0x1b: 
+        case 0x03: 
+        case 0x13: 
+        {
+            uint8_t data = asl(op.addrmode); 
+            set_A(data | cpu.a); 
+            break; 
+        }
+
+        /* SRE */ //todo tests
+        case 0x47: 
+        case 0x57: 
+        case 0x4F: 
+        case 0x5f: 
+        case 0x5b: 
+        case 0x43: 
+        case 0x53: 
+        {
+            uint8_t data = lsr(op.addrmode); 
+            set_A(data ^ cpu.a); 
+            break; 
+        }
+
+        /* SKB */
+        case 0x80: 
+        case 0x82: 
+        case 0x89: 
+        case 0xc2: 
+        case 0xe2:  
+        {
+            /* 2 byte NOP (immidiate ) */
+            // todo: might be worth doing the read
+            break; 
+        }
+
+        /* AXS */
+        case 0xCB:  
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            uint8_t xa = cpu.x & cpu.a; 
+            uint8_t result = xa - data; 
+            if (data <= xa) {
+                set_carry(); 
+            }
+            update_flags_zn(result); 
+            cpu.x = result; 
+            break; 
+        }
+
+        /* ARR */
+        case 0x6B:  
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            set_A(data & cpu.a); 
+            ror_A(); 
+            uint8_t result = cpu.a; 
+            uint8_t b5 = (result >> 5) & 1; 
+            uint8_t b6 = (result >> 6) & 1; 
+            if (b6) {
+                set_carry(); 
+            } else {
+                clear_carry(); 
+            }
+            if (b5 != b6) {
+                cpu.p |= (uint8_t)flag_overflow; 
+            } else {
+                cpu.p &= ~((uint8_t)flag_overflow); 
+            }
+            //todo: registers
+            update_flags_zn(result); 
+            break; 
+        }
+
+        /* unofficial SBC */
+        case 0xeb: {
+            uint16_t addr = get_address(op.addrmode); 
+            int8_t data = cpu_mem_read(addr); 
+            add_to_A((uint8_t)(-data - INT8_C(1))); 
+            break; 
+        }
+
+        /* ANC */
+        case 0x0b: 
+        case 0x2b: 
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            set_A(data & cpu.a); 
+            if (cpu.p & (uint8_t)flag_negative) {
+                set_carry(); 
+            } else {
+                clear_carry(); 
+            }
+            break; 
+        }
+
+        /* ALR */
+        case 0x4b: 
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            set_A(data & cpu.a); 
+            lsr_A(); 
+            break; 
+        }
+
+        //todo: test for everything bellow
+
+        /* NOP read */
+        case 0x04: 
+        case 0x44: 
+        case 0x64: 
+        case 0x14: 
+        case 0x34: 
+        case 0x54: 
+        case 0x74: 
+        case 0xd4: 
+        case 0xf4: 
+        case 0x0c: 
+        case 0x1c: 
+        case 0x3c: 
+        case 0x5c: 
+        case 0x7c: 
+        case 0xdc: 
+        case 0xfc: 
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            // let (addr, page_cross) = self.get_operand_address(&opcode.mode);
+            // let data = self.mem_read(addr);
+            // if page_cross {
+            //     self.bus.tick(1);
+            // }
+            /* do nothing */
+            break; 
+        }
+
+        /* RRA */
+        case 0x67: 
+        case 0x77: 
+        case 0x6f: 
+        case 0x7f: 
+        case 0x7b: 
+        case 0x63: 
+        case 0x73: 
+        {
+            uint8_t data = ror(op.addrmode); 
+            add_to_A(data); 
+            break; 
+        }
+
+        /* ISB */
+        case 0xe7: 
+        case 0xf7: 
+        case 0xef: 
+        case 0xff: 
+        case 0xfb: 
+        case 0xe3: 
+        case 0xf3: 
+        {
+            int8_t data = (int8_t)inc(op.addrmode); 
+            add_to_A((uint8_t)(-data - INT8_C(1))); 
+            break; 
+        }
+
+        /* NOPs */
+        case 0x02: 
+        case 0x12: 
+        case 0x22: 
+        case 0x32: 
+        case 0x42: 
+        case 0x52: 
+        case 0x62: 
+        case 0x72: 
+        case 0x92: 
+        case 0xb2: 
+        case 0xd2: 
+        case 0xf2: 
+            break; 
+
+        case 0x1a: 
+        case 0x3a: 
+        case 0x5a: 
+        case 0x7a: 
+        case 0xda: 
+        case 0xfa: 
+            break; 
+
+        /* LAX */
+        case 0xa7: 
+        case 0xb7: 
+        case 0xaf: 
+        case 0xbf: 
+        case 0xa3: 
+        case 0xb3: 
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            set_A(data); 
+            cpu.x = cpu.a; 
+            break; 
+        }
+
+        /* SAX */
+        case 0x87: 
+        case 0x97: 
+        case 0x8f: 
+        case 0x83: 
+        {
+            uint8_t data = cpu.a & cpu.x; 
+            uint16_t addr = get_address(op.addrmode); 
+            cpu_mem_write(addr, data); 
+            break; 
+        }
+
+        /* LXA */
+        case 0xab: 
+        {
+            lda(op.addrmode); 
+            tax(); 
+            break; 
+        }
+
+        /* XAA */
+        case 0x8b: 
+        {
+            cpu.a = cpu.x; 
+            update_flags_zn(cpu.a); 
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            set_A(data & cpu.a); 
+            break; 
+        }
+
+        /* LAS */
+        case 0xbb: 
+        {
+            uint16_t addr = get_address(op.addrmode); 
+            uint8_t data = cpu_mem_read(addr); 
+            data &= cpu.sp;
+            cpu.a = data; 
+            cpu.x = data; 
+            cpu.sp = data; 
+            update_flags_zn(data); 
+            break; 
+        }
+
+        /* TAS */
+        case 0x9b: 
+        {
+            uint8_t data = cpu.a & cpu.x; 
+            cpu.sp = data; 
+            uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
+
+            data = ((uint8_t)(mem_address >> 8) + 1) & cpu.sp;
+            cpu_mem_write(mem_address, data);
+            break; 
+        }
+
+        /* AHX  Indirect Y */
+        case 0x93: 
+        {
+            uint8_t pos = cpu_mem_read(cpu.pc); 
+            uint16_t mem_address = cpu_mem_read16(pos) + (uint16_t)cpu.y; 
+            uint8_t data = cpu.a & cpu.x & (uint8_t)(mem_address >> 8); 
+            cpu_mem_write(mem_address, data); 
+            break; 
+        }
+
+        /* AHX Absolute Y*/
+        case 0x9f: 
+        {
+            uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
+            uint8_t data = cpu.a & cpu.x & (uint8_t)(mem_address >> 8); 
+            cpu_mem_write(mem_address, data); 
+            break; 
+        }
+
+        /* SHX */
+        case 0x9e: 
+        {
+            uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
+            // todo if cross page boundry {
+            //     mem_address &= (self.x as u16) << 8;
+            // }
+            uint8_t data = cpu.x & ((uint8_t)(mem_address >> 8) + 1); 
+            cpu_mem_write(mem_address, data); 
+            break; 
+        }
+
+        /* SHY */
+        case 0x9c: 
+        {
+            uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.x; 
+            uint8_t data = cpu.y & ((uint8_t)(mem_address >> 8) + 1); 
+            cpu_mem_write(mem_address, data); 
+            break; 
+        }
         default: 
             printf("Error: cpu_run unhandled opcode %x\n", opcode); 
             break; 
