@@ -16,14 +16,14 @@ uint8_t bus_read(uint16_t addr) {
     }
     else if (0x2000 <= addr && addr < 0x4000) {
         uint16_t actual_addr = addr & UINT16_C(0b0010000000000111);
-        printf("ppu address %04x\n", actual_addr); 
+        // printf("ppu address %04x\n", actual_addr); 
         return 0; 
     } 
     else if (0x8000 <= addr) {
         return read_prg_rom(addr); 
     }
     else {
-        printf("reading from address %04x is ignored\n", addr); 
+        // printf("reading from address %04x is ignored\n", addr); 
         return 0; 
     }
 }
@@ -35,13 +35,13 @@ void bus_write(uint16_t addr, uint8_t value) {
     }
     else if (0x2000 <= addr && addr < 0x4000) {
         uint16_t actual_addr = addr & UINT16_C(0b0010000000000111);
-        printf("ppu address %04x\n", actual_addr); 
+        // printf("ppu address %04x\n", actual_addr); 
     } 
     else if (0x8000 <= addr) {
         panic("Error: trying to write to PRG ROM space!\n"); 
     }
     else {
-        printf("writing to address %04x is ignored\n", addr); 
+        // printf("writing to address %04x is ignored\n", addr); 
     }
 }
 

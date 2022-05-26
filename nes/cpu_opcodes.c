@@ -110,22 +110,34 @@ struct cpu_opcode opcodes[0x100] = {
 
     /* Branching */
 
-    [0x4c] = {"JMP", 3, 3, addressmode_none, 0x4c}, //AddressingMode that acts as Immidiate
-    [0x6c] = {"JMP", 3, 5, addressmode_none, 0x6c}, //AddressingMode:Indirect with 6502 bug
+    // [0x4c] = {"JMP", 3, 3, addressmode_none, 0x4c}, //AddressingMode that acts as Immidiate
+    // [0x6c] = {"JMP", 3, 5, addressmode_none, 0x6c}, //AddressingMode:Indirect with 6502 bug
+    [0x4c] = {"JMP", 3, 3, addressmode_absolute, 0x4c}, //AddressingMode that acts as Immidiate
+    [0x6c] = {"JMP", 3, 5, addressmode_indirect, 0x6c}, //AddressingMode:Indirect with 6502 bug
 
-    [0x20] = {"JSR", 3, 6, addressmode_none, 0x20},
+    [0x20] = {"JSR", 3, 6, addressmode_absolute, 0x20},
     [0x60] = {"RTS", 1, 6, addressmode_none, 0x60},
 
     [0x40] = {"RTI", 1, 6, addressmode_none, 0x40},
 
-    [0xd0] = {"BNE", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0xd0},
-    [0x70] = {"BVS", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x70},
-    [0x50] = {"BVC", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x50},
-    [0x30] = {"BMI", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x30},
-    [0xf0] = {"BEQ", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0xf0},
-    [0xb0] = {"BCS", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0xb0},
-    [0x90] = {"BCC", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x90},
-    [0x10] = {"BPL", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x10},
+    // [0xd0] = {"BNE", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0xd0},
+    // [0x70] = {"BVS", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x70},
+    // [0x50] = {"BVC", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x50},
+    // [0x30] = {"BMI", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x30},
+    // [0xf0] = {"BEQ", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0xf0},
+    // [0xb0] = {"BCS", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0xb0},
+    // [0x90] = {"BCC", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x90},
+    // [0x10] = {"BPL", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_none, 0x10},
+    
+    [0xd0] = {"BNE", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0xd0},
+    [0x70] = {"BVS", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0x70},
+    [0x50] = {"BVC", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0x50},
+    [0x30] = {"BMI", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0x30},
+    [0xf0] = {"BEQ", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0xf0},
+    [0xb0] = {"BCS", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0xb0},
+    [0x90] = {"BCC", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0x90},
+    [0x10] = {"BPL", 2, 2 /*(+1 if branch succeeds +2 if to a new page)*/, addressmode_relative, 0x10},
+    
 
     [0x24] = {"BIT", 2, 3, addressmode_zeropage, 0x24},
     [0x2c] = {"BIT", 3, 4, addressmode_absolute, 0x2c},

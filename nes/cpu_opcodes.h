@@ -16,10 +16,15 @@ enum addressmode {
     addressmode_none 
 };
 struct cpu_opcode {
-    char name[4]; 
+    char name[5]; 
     unsigned length;  
     unsigned cycles;
     enum addressmode addrmode; 
     uint8_t opcode; 
 };
 extern struct cpu_opcode opcodes[0x100]; 
+
+
+
+
+

@@ -47,6 +47,8 @@ void cpu_run_with_callback(void(*func)(void));
 void cpu_reset(void); 
 void cpu_load_program(uint8_t *program, size_t length); 
 void cpu_init(void); 
+uint16_t cpu_get_address(enum addressmode mode, uint16_t addr); 
+
 
 
 

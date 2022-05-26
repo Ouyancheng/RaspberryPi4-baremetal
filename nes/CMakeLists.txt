@@ -16,6 +16,7 @@ set(nes_code_files
     sdk.c 
     bus.c 
     rom.c 
+    cpu_debug.c 
 )
 if (NOT DEFINED UNIX)
     add_library(${TARGET} 

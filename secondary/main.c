@@ -36,24 +36,24 @@ int main(void) {
     uart_init(UART5_BASE, UART5_TX, UART5_RX, UART5_PIN_FUNC, UART5_PIN_FUNC, 115200); 
 
     printf("hello!!! from secondary program!!!\n"); 
-    // uart_putc(UART0_BASE, '\n');
-    // uart_putc(UART0_BASE, '\n');
 
     dev_barrier(); 
     // nes standard 250x240 pixels 
-    framebuffer_init(256, 240, 32); 
+    framebuffer_init(256, 240, 32, 0); 
     printf("width=%d, height=%d\n", width, height); 
-
+    
     printf("press any key to continue...\n"); 
     dev_barrier(); 
     int t = 0; 
     int time_used = 0;
     int cnt = 0; 
+    
     while (!uart_has_data(UART0_BASE)) {
         unsigned now = get_current_time_us(); 
         for (int i = 10; i < width; i += 1) {
             for (int j = 10; j < height; j += 1) {
-                draw_pixel_rgba((unsigned char*)fb, i, j, (t+i+j)&0xff, (t+i)&0xff, (t+j)&0xff, 0x0); 
+                // draw_pixel_rgba((unsigned char*)fb, i, j, (t+i+j)&0xff, (t+i)&0xff, (t+j)&0xff, 0x0); 
+                draw_pixel_rgba((unsigned char*)fb, i, j, (t)&0xff, (t*2)&0xff, (t*4)&0xff, 0x0); 
                 // draw_pixel(i, j, (0x0e + t + i + j)&0xff); 
             }
         }
@@ -63,13 +63,18 @@ int main(void) {
         // sprintf(buf, "%d", time_used); 
         int_to_dec_str(buf, cnt); 
         draw_string(2, 2, buf, 0x0f); 
+        
         t += 1; 
         cnt = 0; 
         time_used = get_current_time_us()-now; 
         // 1000000/60 = 16666
         while (get_current_time_us() - now < 16666) {
             cnt += 1; 
+            // if (cnt == 10000) {
+            //     framebuffer_display_and_swap(); 
+            // }
         }
+        // delay_us(16666); 
     }
     return 0; 
 } 

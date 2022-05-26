@@ -13,7 +13,8 @@ unsigned char *fb1;
 unsigned char *fb2; 
 int framebuffer_init(uint32_t physical_width,
                      uint32_t physical_height,
-                     uint32_t bits_per_pixel) {
+                     uint32_t bits_per_pixel,
+                     int doublebuffer) {
     mbox[0] = 35 * 4;  // Length of message in bytes
     mbox[1] = MBOX_REQUEST;
 
@@ -24,7 +25,7 @@ int framebuffer_init(uint32_t physical_width,
     mbox[6] = physical_height;  // Value(height)
 
     uint32_t virtual_width = physical_width;
-    uint32_t virtual_height = physical_height; // 2 * physical_height; 
+    uint32_t virtual_height = 2 * physical_height; // physical_height; // 
     uint32_t virtual_offset_width = 0;
     uint32_t virtual_offset_height = 0; 
 
@@ -67,13 +68,17 @@ int framebuffer_init(uint32_t physical_width,
     if (mbox_call(MBOX_CH_PROP) && mbox[20] == 32 && mbox[28] != 0) {
         mbox[28] &= 0x3FFFFFFF;  // Convert GPU address to ARM address
         width = mbox[10];        // Actual physical width
-        height = mbox[11];       // Actual physical height
+        height = mbox[11]/2;     // Actual physical height
         pitch = mbox[33];        // Number of bytes per line
         isrgb = mbox[24];        // Pixel order
-        fb = (unsigned char*)((long)mbox[28]);
-        // fb1 = (unsigned char*)((long)mbox[28]);
-        // fb2 = fb1 + (width * height)*sizeof(unsigned int); 
-        // fb = fb2; 
+        if (!doublebuffer) {
+            fb = (unsigned char*)((long)mbox[28]);
+        }
+        else {
+            fb1 = (unsigned char*)((long)mbox[28]);
+            fb2 = fb1 + (width * height)*sizeof(unsigned int); 
+            fb = fb2; 
+        }
         // printf("fb init success! width = %d height = %d fb1=%p, fb2=%p, fb=%p\n", width, height, fb1, fb2, fb); 
         return 0;
     }
@@ -81,10 +86,14 @@ int framebuffer_init(uint32_t physical_width,
 }
 
 int framebuffer_display_and_swap() {
-    // memset((char*)mbox, 0, 36*sizeof(unsigned int));
+    do {
+        asm volatile("nop":::"memory");
+        dev_barrier();
+    } while(*MBOX_STATUS & MBOX_FULL);
+    memset((char*)mbox, 0, 36*sizeof(unsigned int));
     unsigned current_fb = 0; 
     unsigned char *nextfb; 
-    printf("fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
+    // printf("fb = %p, fb1=%p, fb2=%p\n", fb, fb1, fb2); 
     if (fb == fb1) {
         current_fb = 0; 
         nextfb = fb2; 
@@ -96,7 +105,7 @@ int framebuffer_display_and_swap() {
         return -2; 
     }
     (void)current_fb;
-    printf("currentfb * height=%d\n", current_fb * height);
+    // printf("currentfb * height=%d\n", current_fb * height);
     mbox[0] = 8 * 4; 
     mbox[1] = MBOX_REQUEST; 
     // set virtual offset 
@@ -107,13 +116,15 @@ int framebuffer_display_and_swap() {
     mbox[6] = current_fb * height;  // Value(y)
     mbox[7] = MBOX_TAG_LAST; 
     asm volatile ("nop" ::: "memory"); 
-    printf("about to mailbox!\n");
     dev_barrier(); 
+    // printf("about to mailbox!\n");
     if (mbox_call(MBOX_CH_PROP)) {
-        printf("prev fb=%p, setting fb=%p\n", fb, nextfb);
+        // printf("prev fb=%p, setting fb=%p\n", fb, nextfb);
         fb = nextfb; 
         return 0; 
     }
+    static int failcount = 0; 
+    // printf("failed to swap buffer! %d\n", failcount++); 
     return -1; 
 }
 // void draw_pixel_rgba(unsigned char *buffer, int x, int y, uint32_t r, uint32_t g, uint32_t b, uint32_t a) {

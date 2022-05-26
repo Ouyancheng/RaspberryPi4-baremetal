@@ -36,59 +36,64 @@ void cpu_init(void) {
     // memset((uint8_t*)cpu_ram, 0, CPU_RAM_SIZE); 
 }
 /// get the address from addressing mode, NOTE: pc is pointing at the next byte 
-uint16_t get_address(enum addressmode mode) {
+uint16_t get_address_vaddr(enum addressmode mode, uint16_t addr) {
     switch (mode) {
     case addressmode_imm:
-        return cpu.pc;
+        return addr;
     case addressmode_zeropage: 
-        return (uint16_t)cpu_mem_read(cpu.pc); 
+        return (uint16_t)cpu_mem_read(addr); 
     case addressmode_absolute: 
-        return cpu_mem_read16(cpu.pc); 
+        return cpu_mem_read16(addr); 
     
     case addressmode_zeropage_x: 
-        return (uint16_t)((cpu.x + cpu_mem_read(cpu.pc)) & 0xFF); 
+        return (uint16_t)((cpu.x + cpu_mem_read(addr)) & 0xFF); 
     case addressmode_zeropage_y: 
-        return (uint16_t)((cpu.y + cpu_mem_read(cpu.pc)) & 0xFF); 
+        return (uint16_t)((cpu.y + cpu_mem_read(addr)) & 0xFF); 
 
     case addressmode_absolute_x: 
-        return (cpu_mem_read16(cpu.pc) + (uint16_t)cpu.x) & 0xFFFF; 
+        return (cpu_mem_read16(addr) + (uint16_t)cpu.x) & 0xFFFF; 
     case addressmode_absolute_y: 
-        return (cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y) & 0xFFFF; 
+        return (cpu_mem_read16(addr) + (uint16_t)cpu.y) & 0xFFFF; 
 
     case addressmode_indirect_x: {
-        uint8_t base = cpu_mem_read(cpu.pc); 
+        uint8_t base = cpu_mem_read(addr); 
         uint8_t ptr = (base + cpu.x) & 0xff; 
-        uint16_t lo = (uint16_t)cpu_mem_read(ptr); 
-        uint16_t hi = (uint16_t)cpu_mem_read((ptr+1) & 0xff); 
-        return ((hi << 8) | lo); 
+        uint8_t lo = cpu_mem_read(ptr); 
+        uint8_t hi = cpu_mem_read((ptr+1) & 0xff); 
+        return (((uint16_t)hi) << 8) | (uint16_t)lo; 
     }
     case addressmode_indirect_y: {
-        uint8_t base = cpu_mem_read(cpu.pc); 
-        uint16_t lo = (uint16_t)cpu_mem_read(base); 
-        uint16_t hi = (uint16_t)cpu_mem_read((base+1) & 0xff); 
-        uint16_t deref = ((hi << 8) | lo);
+        uint8_t base = cpu_mem_read(addr); 
+        uint8_t lo = cpu_mem_read(base); 
+        uint8_t hi = cpu_mem_read((base+1) & 0xff); 
+        uint16_t deref = ((((uint16_t)hi) << 8) | (uint16_t)lo);
         return (deref + (uint16_t)cpu.y) & 0xffff; 
     }
 
     case addressmode_indirect: {
-        uint16_t base = cpu_mem_read16(cpu.pc); 
+        uint16_t base = cpu_mem_read16(addr); 
         return cpu_mem_read16(base); 
     }
     case addressmode_relative: {
         ////// may be correct 
-        uint8_t offset = cpu_mem_read(cpu.pc); 
-        return (cpu.pc + 1 + (uint16_t)offset) & 0xffff; 
+        uint8_t offset = cpu_mem_read(addr); 
+        return (addr + 1 + (uint16_t)offset) & 0xffff; 
     }
     case addressmode_none: 
-        printf("Error: get_address in none mode\n"); 
-        break; 
+        // printf("Error: get_address in none mode\n"); 
+        return 0; 
     default: 
         printf("Error: get_address invalid mode %d\n", (int)mode); 
         break;
     }
     return 0; 
 }
-
+static inline uint16_t get_address(enum addressmode mode) {
+    return get_address_vaddr(mode, cpu.pc); 
+}
+uint16_t cpu_get_address(enum addressmode mode, uint16_t addr) {
+    return get_address_vaddr(mode, addr); 
+}
 INLINE void update_flags_zn(uint8_t result) {
     if (result == 0) {
         cpu.p |= (uint8_t)flag_zero; 
@@ -405,12 +410,15 @@ void cpu_load_program(uint8_t *program, size_t length) {
     ); 
     cpu_mem_write16(UINT16_C(0xFFFC), UINT16_C(0x8000)); 
 #endif 
-    memcpy(
-        ((uint8_t*)cpu_ram) + 0x0600, 
-        program,
-        length
-    ); 
-    cpu_mem_write16(UINT16_C(0xFFFC), UINT16_C(0x0600)); 
+    // memcpy(
+    //     ((uint8_t*)cpu_ram) + 0x0600, 
+    //     program,
+    //     length
+    // ); 
+    // cpu_mem_write16(UINT16_C(0xFFFC), UINT16_C(0x0600)); 
+    for (size_t i = 0; i < length; ++i) {
+        cpu_mem_write(UINT16_C(0x0600) + (uint16_t)i, program[i]); 
+    }
 }
 void cpu_reset(void) {
     cpu.a = 0; 
@@ -427,7 +435,12 @@ void cpu_run(void) {
     cpu_run_with_callback(do_nothing); 
 }
 void cpu_run_with_callback(void(*func)(void)) {
+    // int cnt = 0; 
     while (1) {
+        // if (cnt++ > 100) {
+        //     return; 
+        // }
+        func(); 
         uint8_t opcode = cpu_mem_read(cpu.pc); 
         // printf("step pc = %04x opcode=0x%02x\n", cpu.pc, opcode); 
         cpu.pc += 1; 
@@ -852,7 +865,6 @@ void cpu_run_with_callback(void(*func)(void)) {
         if (pc_backup == cpu.pc) {
             cpu.pc += (uint16_t)(op.length - 1); 
         }
-        func(); 
     }
 }
 void cpu_load_program_and_run(uint8_t *program, size_t length) {

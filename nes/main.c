@@ -1,5 +1,6 @@
 #include "sdk.h"
 #include "cpu.h"
+#include "cpu_debug.h"
 #ifdef PLATFORM_UNIX 
 #include "SDL2/SDL.h"
 #include <stdbool.h>
@@ -209,21 +210,24 @@ int read_screen_state(void) {
     }
     return update; 
 }
-uint64_t cnt = 0; 
+int cnt = 0; 
+uint8_t random_number = 0; 
 void callback(void) {
     cnt += 1; 
-    if (cnt % 50 == 0) {
+    if (cnt % 256 == 0) {
         // printf("cnt=%llu\n", cnt); 
         SDL_RenderPresent(renderer);
     }
     handle_input(); 
-    uint8_t random_number = rand() & 0xff; 
+    random_number = (random_number + 1) % 16; 
     cpu_mem_write(0xfe, random_number);
     read_screen_state(); 
     // printf("callback\n"); 
     // usleep(100); 
 }
-int main(void) {
+
+
+void test_cpu(void) {
 #if TEST_CPU 
     test_0xa9_lda_immidiate_load_data(); 
     test_0xaa_tax_move_a_to_x(); 
@@ -232,7 +236,9 @@ int main(void) {
     test_lda_from_memory(); 
     printf("all tests passed!\n"); 
 #endif 
+}
 
+void test_sdl(void) {
 #if TEST_SDL 
     // returns zero on success else non-zero
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -267,6 +273,9 @@ int main(void) {
     SDL_DestroyWindow(win);
     SDL_Quit();
 #endif 
+}
+
+int main(void) {
     srand(0); 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("error initializing SDL: %s\n", SDL_GetError());
@@ -288,7 +297,8 @@ int main(void) {
     // cpu_reset(); 
     // cpu_run_with_callback(callback); 
 
-    FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
+    FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
     if (!romfile) {
         panic("romfile %s not found!\n", "../snake.nes"); 
     }
@@ -302,10 +312,13 @@ int main(void) {
     fclose(romfile); 
 
     struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
+    // printf("romsize = %zu, prgsize = %zu, chrsize = %zu\n", romsize, rom.prg_rom_size, rom.chr_rom_size); 
     bus_init(rom); 
     cpu_init(); 
     cpu_reset(); 
-    cpu_run_with_callback(callback); 
+    cpu.pc = 0xC000; // hack 
+    // cpu_run_with_callback(callback); 
+    cpu_run_with_callback(dump_cpu); 
     
     printf("Done!!!\n"); 
     return 0; 

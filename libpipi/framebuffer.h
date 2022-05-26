@@ -8,7 +8,8 @@ extern unsigned int width, height, pitch, isrgb;
 int framebuffer_init(
     uint32_t physical_width, 
     uint32_t physical_height, 
-    uint32_t bits_per_pixel 
+    uint32_t bits_per_pixel, 
+    int doublebuffer
 );
 /// NOTE: this function does not work right now... don't know why... 
 int framebuffer_display_and_swap(); 
