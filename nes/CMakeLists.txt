@@ -33,6 +33,20 @@ else()
     set(nes_INCLUDE_DIRS ${nes_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
     add_executable(${TARGET} ${nes_code_files})
     target_link_libraries(${TARGET} ${SDL2_LIBRARIES})
+
+
+    # set(CMAKE_C_FLAGS "-Ofast -flto -march=native")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT result OUTPUT output)
+    if(result)
+        set_property(TARGET ${TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(WARNING "IPO is not supported: ${output}")
+    endif()
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_OBJDUMP} -C -D "${TARGET}"  > "${TARGET}.list"
+        COMMENT "Invoking: objdump")
+
 endif()
 target_include_directories(${TARGET} PUBLIC "${nes_INCLUDE_DIRS}")
 

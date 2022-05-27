@@ -2,7 +2,7 @@
 
 struct cpustate cpu; 
 #define SP_RESET 0xFD 
-// #define INLINE_OP 1 
+#define INLINE_OP 1 
 #ifdef INLINE_OP
 #   define INLINE static inline
 #else 

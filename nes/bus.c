@@ -16,16 +16,18 @@ uint8_t bus_read(uint16_t addr) {
     }
     else if (0x2000 <= addr && addr < 0x4000) {
         uint16_t actual_addr = addr & UINT16_C(0b0010000000000111);
-        if (actual_addr == 0x2007) {
-            return ppu_read_data(); 
-        } else if (actual_addr == 0x2004) {
-            // OAM data 
-            return ppu_read_oam_data(); 
-        } else if (actual_addr == 0x2002) {
-            // status 
-            return ppu_read_status(); 
-        } else {
-            panic("reading invalid ppu register %04x\n", addr); 
+        switch (actual_addr) {
+            case 0x2007:
+                return ppu_read_data(); 
+            case 0x2004: 
+                // OAM data 
+                return ppu_read_oam_data(); 
+            case 0x2002: 
+                // status 
+                return ppu_read_status(); 
+            default: 
+                panic("reading invalid ppu register %04x\n", addr); 
+                break; 
         }
         return 0xFF; 
     } 

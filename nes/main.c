@@ -5,60 +5,9 @@
 #include "SDL2/SDL.h"
 #include <stdbool.h>
 #include <stdlib.h>
-void test_opcode(void) {
-    int invalid_count = 0; 
-    int valid_count = 0; 
-    for (unsigned i = 0; i < 0x100U; ++i) {
-        if (opcodes[i].opcode != i || opcodes[i].length == 0) {
-            printf("opcode %x is %x\n", i, opcodes[i].opcode); 
-            // printf("[0x%02x] = {.name=\"???\", .length=0, .cycles=0, .addrmode=addressmode_none, .opcode=0x%02x},\n", i, i); 
-            invalid_count += 1; 
-        } else {
-            valid_count += 1;
-        }
-    }
-    printf("invalid_count = %d, valid_count = %d\n", invalid_count, valid_count); 
-}
-void test_0xa9_lda_immidiate_load_data() {
-    cpu_init(); 
-    uint8_t program[] = {0xa9, 0x05, 0x00}; 
-    cpu_load_program_and_run((uint8_t*)program, sizeof(program)); 
-    assert(cpu.a == 5); 
-    assert((cpu.p & UINT8_C(0b00000010)) == UINT8_C(0b00)); 
-    assert((cpu.p & UINT8_C(0b10000000)) == UINT8_C(0)); 
-}
-void test_0xaa_tax_move_a_to_x() {
-    cpu_init(); 
-    uint8_t program[] = {0xaa, 0x00}; 
-    cpu_load_program((uint8_t*)program, sizeof(program));
-    cpu_reset(); 
-    cpu.a = 10;
-    cpu_run(); 
-    assert(cpu.x == 10); 
-}
-void test_5_ops_working_together() {
-    cpu_init(); 
-    uint8_t program[] = {0xa9, 0xc0, 0xaa, 0xe8, 0x00};
-    cpu_load_program_and_run((uint8_t*)program, sizeof(program));
-    assert(cpu.x == UINT8_C(0xc1)); 
-}
-void test_inx_overflow() {
-    cpu_init(); 
-    uint8_t program[] = {0xe8, 0xe8, 0x00};
-    cpu_load_program((uint8_t*)program, sizeof(program)); 
-    cpu_reset(); 
-    cpu.x = 0xff;
-    cpu_run(); 
-    assert(cpu.x == 1); 
-}
-void test_lda_from_memory() {
-    cpu_init(); 
-    cpu_mem_write(0x10, 0x55); 
-    uint8_t program[] = {0xa5, 0x10, 0x00};
-    cpu_load_program_and_run((uint8_t*)program, sizeof(program)); 
-
-    assert(cpu.a == 0x55);
-}
+#include "pputest.h"
+#include <signal.h>
+#define SDL_DRAW 1
 uint8_t snake_game[] = {
     0x20, 0x06, 0x06, 0x20, 0x38, 0x06, 0x20, 0x0d, 0x06, 0x20, 0x2a, 0x06, 0x60, 0xa9, 0x02, 0x85,
     0x02, 0xa9, 0x04, 0x85, 0x03, 0xa9, 0x11, 0x85, 0x10, 0xa9, 0x10, 0x85, 0x12, 0xa9, 0x0f, 0x85,
@@ -93,6 +42,8 @@ uint8_t snake_game[] = {
 };
 SDL_Window* win;
 SDL_Renderer *renderer; 
+SDL_Surface *surface; 
+SDL_Texture *texture; 
 void handle_input(void) {
     SDL_Event e;
     bool quit = false;
@@ -123,74 +74,65 @@ void handle_input(void) {
         }
     }
 }
-SDL_Color get_color(uint8_t b) {
-    SDL_Color color; 
+struct rgb get_color(uint8_t b) {
+    struct rgb color; 
     color.a = SDL_ALPHA_OPAQUE; 
     switch (b) {
     case 0: 
         color.r = 0;
         color.g = 0; 
         color.b = 0; 
-        // color.a = 0; 
         break; 
     case 1: 
         color.r = 0xff; 
         color.g = 0xff; 
         color.b = 0xff; 
-        // color.a = 0; 
         break; 
     case 2: 
     case 9: 
         color.r = 0x6f; 
         color.g = 0x6f; 
         color.b = 0x6f; 
-        // color.a = 0; 
         break; 
     case 3: 
     case 10: 
         color.r = 0xff; 
         color.g = 0x0; 
         color.b = 0x0; 
-        // color.a = 0; 
         break; 
     case 4: 
     case 11: 
         color.r = 0x0; 
         color.g = 0xff; 
         color.b = 0x0; 
-        // color.a = 0; 
         break; 
     case 5: 
     case 12: 
         color.r = 0x0; 
         color.g = 0x0; 
         color.b = 0xff; 
-        // color.a = 0; 
         break; 
     case 6: 
     case 13: 
         color.r = 0xff; 
         color.g = 0x0; 
         color.b = 0xff; 
-        // color.a = 0; 
         break; 
     case 7: 
     case 14: 
         color.r = 0xff; 
         color.g = 0xff; 
         color.b = 0x0; 
-        // color.a = 0; 
         break; 
     default: 
         color.r = 0x0; 
         color.g = 0xff; 
         color.b = 0xff; 
-        // color.a = 0; 
         break; 
     }
     return color; 
 }
-uint8_t frame_buffer[2048]; 
+struct rgb framebuffer[32*32]; 
 int read_screen_state(void) {
     int update = 0; 
     unsigned x; 
@@ -201,12 +143,15 @@ int read_screen_state(void) {
         // 1536 - 512 = 1024 
         uint8_t color_idx = cpu_mem_read(i); 
         // if (color_idx == 0) {continue; }
-        SDL_Color color = get_color(color_idx); 
+        struct rgb color = get_color(color_idx); 
         idx = i-0x0200; 
         y = idx / 32; 
         x = idx - (32 * y); 
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a); 
-        SDL_RenderDrawPoint(renderer, x, y); 
+        #if SDL_DRAW
+        // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE); 
+        // SDL_RenderDrawPoint(renderer, x, y); 
+        framebuffer[idx] = color; 
+        #endif 
     }
     return update; 
 }
@@ -214,28 +159,38 @@ int cnt = 0;
 uint8_t random_number = 0; 
 void callback(void) {
     cnt += 1; 
-    if (cnt % 256 == 0) {
-        // printf("cnt=%llu\n", cnt); 
-        SDL_RenderPresent(renderer);
+    if (cnt % 600 == 0) {
+        printf("cnt=%d\n", cnt); 
+        // cnt = 0; 
+        #if SDL_DRAW
+        uint8_t *pixels;
+        int pitch;
+        if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch) != 0) {
+            panic("failed to lock texture!\n"); 
+        } 
+        // printf("pitch=%d\n", pitch); 
+        memcpy(pixels, framebuffer, 32*32*4); 
+        // for (int y = 0; y < 32; ++y) {
+        //     for (int x = 0; x < 32; ++x) {
+        //         pixels[y*pitch + 4*x]   = framebuffer[y*32+x].a;
+        //         pixels[y*pitch + 4*x+1] = framebuffer[y*32+x].b;
+        //         pixels[y*pitch + 4*x+2] = framebuffer[y*32+x].g;
+        //         pixels[y*pitch + 4*x+3] = framebuffer[y*32+x].r;
+        //     }
+        // }
+        SDL_UnlockTexture(texture); 
+        if (SDL_RenderCopy(renderer, texture, NULL, NULL) != 0) {
+            panic("failed to copy texture\n"); 
+        }
+        SDL_RenderPresent(renderer); 
+        SDL_Delay(42); 
+        #endif 
     }
     handle_input(); 
     random_number = (random_number + 1) % 16; 
     cpu_mem_write(0xfe, random_number);
     read_screen_state(); 
-    // printf("callback\n"); 
-    // usleep(100); 
-}
-
-
-void test_cpu(void) {
-#if TEST_CPU 
-    test_0xa9_lda_immidiate_load_data(); 
-    test_0xaa_tax_move_a_to_x(); 
-    test_5_ops_working_together(); 
-    test_inx_overflow(); 
-    test_lda_from_memory(); 
-    printf("all tests passed!\n"); 
-#endif 
+    
 }
 
 void test_sdl(void) {
@@ -274,11 +229,10 @@ void test_sdl(void) {
     SDL_Quit();
 #endif 
 }
-
-int main(void) {
+void test_cpu_rom(void) {
     srand(0); 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        printf("error initializing SDL: %s\n", SDL_GetError());
+        panic("error initializing SDL: %s\n", SDL_GetError());
     }
     win = SDL_CreateWindow(
         "GAME",
@@ -286,21 +240,27 @@ int main(void) {
         SDL_WINDOWPOS_CENTERED,
         32*10, 32*10, 0
     );
-    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_SOFTWARE);
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal"); 
+    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderSetScale(renderer, 10.0, 10.0); 
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
-
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 32, 32); 
+    if (!texture) {
+        panic("failed to get texture!\n"); 
+    }
+    SDL_SetRenderTarget(renderer, texture);
     // cpu_init(); 
     // cpu_load_program((uint8_t*)snake_game, sizeof(snake_game)); 
     // cpu_reset(); 
     // cpu_run_with_callback(callback); 
 
-    // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
-    FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
+    FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
     if (!romfile) {
-        panic("romfile %s not found!\n", "../snake.nes"); 
+        panic("romfile not found!\n"); 
     }
     size_t romsize; 
     fseek(romfile , 0L , SEEK_END);
@@ -317,10 +277,13 @@ int main(void) {
     cpu_init(); 
     cpu_reset(); 
     
-    // cpu_run_with_callback(callback); 
-    cpu.pc = 0xC000; // hack 
-    cpu_run_with_callback(dump_cpu); 
-    
+    cpu_run_with_callback(callback); 
+
+    // cpu.pc = 0xC000; // hack 
+    // cpu_run_with_callback(dump_cpu); 
+}
+int main(void) {
+    test_cpu_rom(); 
     printf("Done!!!\n"); 
     return 0; 
 }

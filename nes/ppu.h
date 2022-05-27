@@ -65,9 +65,10 @@ enum ppu_status_flags {
 
 
 struct rgb {
-    uint8_t r; 
-    uint8_t g; 
+    uint8_t a; 
     uint8_t b; 
+    uint8_t g; 
+    uint8_t r; 
 };
 
 void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror); 
