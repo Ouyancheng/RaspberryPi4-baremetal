@@ -44,6 +44,15 @@ SDL_Window* win;
 SDL_Renderer *renderer; 
 SDL_Surface *surface; 
 SDL_Texture *texture; 
+uint8_t *pixels;
+int pitch;
+void cleanup_and_exit(int code) {
+    SDL_DestroyTexture(texture); 
+    SDL_DestroyRenderer(renderer); 
+    SDL_DestroyWindow(win);
+    SDL_Quit();
+    exit(code); 
+}
 void handle_input(void) {
     SDL_Event e;
     bool quit = false;
@@ -51,26 +60,31 @@ void handle_input(void) {
     
     if (!ret) { return; }
     if (e.type == SDL_QUIT) {
-        exit(0); 
+        cleanup_and_exit(0); 
     }
     if (e.type == SDL_KEYDOWN) {
         // SDL_KeyboardEvent key = e.key; 
         // SDL_Keysym keysym = key.keysym; 
         SDL_Keycode keycode = e.key.keysym.sym; 
-        if (keycode == SDLK_w) {
-            // printf("w\n"); 
-            cpu_mem_write(0xff, 0x77); 
-        } else if (keycode == SDLK_a) {
-            // printf("a\n"); 
-            cpu_mem_write(0xff, 0x61); 
-        } else if (keycode == SDLK_s) {
-            // printf("s\n"); 
-            cpu_mem_write(0xff, 0x73); 
-        } else if (keycode == SDLK_d) {
-            // printf("d\n"); 
-            cpu_mem_write(0xff, 0x64); 
-        } else if (keycode == SDLK_ESCAPE) {
-            exit(0); 
+        switch (keycode) {
+            case SDLK_w: 
+                cpu_mem_write(0xff, 0x77); 
+                break; 
+            case SDLK_a: 
+                cpu_mem_write(0xff, 0x61); 
+                break; 
+            case SDLK_s: 
+                cpu_mem_write(0xff, 0x73); 
+                break; 
+            case SDLK_d: 
+                cpu_mem_write(0xff, 0x64); 
+                break; 
+            case SDLK_ESCAPE: 
+            case SDLK_q: 
+                cleanup_and_exit(0); 
+                break; 
+            default: 
+                break; 
         }
     }
 }
@@ -151,6 +165,14 @@ int read_screen_state(void) {
         // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE); 
         // SDL_RenderDrawPoint(renderer, x, y); 
         framebuffer[idx] = color; 
+        // pixels[idx * 4] = color.a; 
+        // pixels[idx * 4 + 1] = color.b; 
+        // pixels[idx * 4 + 2] = color.g; 
+        // pixels[idx * 4 + 3] = color.r; 
+        // pixels[y*pitch + 4*x]   = color.a;
+        // pixels[y*pitch + 4*x+1] = color.b;
+        // pixels[y*pitch + 4*x+2] = color.g;
+        // pixels[y*pitch + 4*x+3] = color.r;
         #endif 
     }
     return update; 
@@ -160,15 +182,12 @@ uint8_t random_number = 0;
 void callback(void) {
     cnt += 1; 
     if (cnt % 600 == 0) {
-        printf("cnt=%d\n", cnt); 
+        // printf("cnt=%d\n", cnt); 
         // cnt = 0; 
         #if SDL_DRAW
-        uint8_t *pixels;
-        int pitch;
         if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch) != 0) {
             panic("failed to lock texture!\n"); 
         } 
-        // printf("pitch=%d\n", pitch); 
         memcpy(pixels, framebuffer, 32*32*4); 
         // for (int y = 0; y < 32; ++y) {
         //     for (int x = 0; x < 32; ++x) {
@@ -183,6 +202,7 @@ void callback(void) {
             panic("failed to copy texture\n"); 
         }
         SDL_RenderPresent(renderer); 
+        
         SDL_Delay(42); 
         #endif 
     }
@@ -252,6 +272,10 @@ void test_cpu_rom(void) {
         panic("failed to get texture!\n"); 
     }
     SDL_SetRenderTarget(renderer, texture);
+    // if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch) != 0) {
+    //     panic("failed to lock texture!\n"); 
+    // } 
+
     // cpu_init(); 
     // cpu_load_program((uint8_t*)snake_game, sizeof(snake_game)); 
     // cpu_reset(); 
