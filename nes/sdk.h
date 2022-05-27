@@ -5,14 +5,20 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #ifndef PLATFORM_UNIX
+#   include "common.h"
 #   include "c_string.h"
 #   include "printf.h"
 #   include "delay.h"
+static inline void exit(int code) {
+    rpi_reboot(); 
+} 
 #else 
 #   include <string.h>
 #   include <stdio.h>
 #   include <unistd.h>
+#   include <stdlib.h>
 static inline void delay_us(unsigned us) {
     usleep(us); 
 }
@@ -36,6 +42,7 @@ static inline uint8_t clear_mask(uint8_t reg, uint8_t mask) {
 }
 #define set_mask_inplace(reg, mask) ((reg) |= ((uint8_t)(mask)))
 #define clear_mask_inplace(reg, mask) ((reg) &= (~((uint8_t)(mask))))
+// #define condition_update_mask_inplace(condition, reg, mask) ((condition) ? set_mask_inplace(reg, mask) : clear_mask_inplace(reg, mask))
 #endif 
 
 

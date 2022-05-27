@@ -26,6 +26,9 @@ struct ppu_device {
     uint8_t status; 
     uint8_t oam_addr; 
     uint8_t buffer; 
+    unsigned cycles; 
+    unsigned scanline; 
+    unsigned nmi_raised; 
 };
 
 extern struct ppu_device ppu; 
@@ -86,7 +89,7 @@ uint8_t ppu_read_oam_data(void);
 void ppu_write_oam_data(uint8_t value);
 uint8_t ppu_read_status(void); 
 void ppu_oam_dma(uint8_t *data, unsigned data_size); 
-
+bool ppu_tick_cycles(unsigned ppu_cycles); 
 
 
 

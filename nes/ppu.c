@@ -19,6 +19,9 @@ void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror) {
     ppu.status = 0; 
     ppu.oam_addr = 0; 
     ppu.buffer = 0; 
+    ppu.cycles = 0; 
+    ppu.scanline = 0; 
+    ppu.nmi_raised = 0; 
 }
 void ppu_write_addr(uint8_t data) {
     if (ppu.addr.reading_lo) {
@@ -63,6 +66,7 @@ uint8_t ppu_read_data(void) {
     uint8_t result = ppu.buffer; 
     if (addr < 0x2000) {
         result = ppu.buffer; 
+        printf("addr=%04x chrom_size=%zu\n", addr, ppu.chr_rom_size); 
         ppu.buffer = ppu.chr_rom[addr]; 
     } else if (0x2000 <= addr && addr < 0x3000) {
         result = ppu.buffer; 
@@ -110,7 +114,16 @@ void ppu_reset_scroll_state(void) {
     ppu.scroll.reading_y = 0; 
 }
 void ppu_write_ctrl(uint8_t value) {
+/*
+    In addition to scanline position, PPU would immidiately trigger NMI if both of these conditions are met: 
+    - PPU is VBLANK state
+    - "Generate NMI" bit in the controll Register is updated from 0 to 1.
+*/
+    uint8_t prev_generate_nmi = (ppu.ctrl & ppu_ctrl_generate_nmi); 
     ppu.ctrl = value; 
+    if ((ppu.status & ppu_status_vblank_started) && (!prev_generate_nmi) && (value & ppu_ctrl_generate_nmi)) {
+        ppu.nmi_raised = 1; 
+    }
 }
 void ppu_write_mask(uint8_t value) {
     ppu.mask = value; 
@@ -138,5 +151,29 @@ void ppu_oam_dma(uint8_t *data, unsigned data_size) {
         ppu.oam_addr += 1; 
     }
 }
+bool ppu_tick_cycles(unsigned ppu_cycles) {
+    ppu.cycles += ppu_cycles; 
+    if (ppu.cycles >= 341) {
+        ppu.cycles -= 341; 
+        ppu.scanline += 1; 
+        if (ppu.scanline == 241) {
+            if (ppu.ctrl & ppu_ctrl_generate_nmi) {
+                ppu.nmi_raised = 1; 
+            }
+            set_mask_inplace(ppu.status, ppu_status_vblank_started); 
+            clear_mask_inplace(ppu.status, ppu_status_sprite_zero_hit); 
+        }
+        else if (ppu.scanline >= 262) {
+            ppu.scanline = 0; 
+            ppu.nmi_raised = 0; 
+            clear_mask_inplace(ppu.status, ppu_status_sprite_zero_hit); 
+            clear_mask_inplace(ppu.status, ppu_status_vblank_started); 
+            return true; 
+        }
+    }
+    return false; 
+}
+
+
 
 

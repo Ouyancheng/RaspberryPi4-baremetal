@@ -54,6 +54,7 @@ void cleanup_and_exit(int code) {
     exit(code); 
 }
 void handle_input(void) {
+#if SDL_DRAW
     SDL_Event e;
     bool quit = false;
     int ret = SDL_PollEvent(&e); 
@@ -87,6 +88,7 @@ void handle_input(void) {
                 break; 
         }
     }
+#endif 
 }
 struct rgb get_color(uint8_t b) {
     struct rgb color; 
@@ -181,8 +183,12 @@ int cnt = 0;
 uint8_t random_number = 0; 
 void callback(void) {
     cnt += 1; 
-    if (cnt % 600 == 0) {
-        // printf("cnt=%d\n", cnt); 
+    if (cnt % 600 == 0) {//10000==0){//
+        handle_input(); 
+        random_number = (random_number + 1) % 16; 
+        cpu_mem_write(0xfe, random_number);
+        read_screen_state(); 
+        if (cnt % 600000 == 0) printf("cnt=%d\n", cnt); 
         // cnt = 0; 
         #if SDL_DRAW
         if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch) != 0) {
@@ -206,11 +212,6 @@ void callback(void) {
         SDL_Delay(42); 
         #endif 
     }
-    handle_input(); 
-    random_number = (random_number + 1) % 16; 
-    cpu_mem_write(0xfe, random_number);
-    read_screen_state(); 
-    
 }
 
 void test_sdl(void) {
@@ -283,6 +284,7 @@ void test_cpu_rom(void) {
 
     FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/smb1.nes", "rb"); 
     if (!romfile) {
         panic("romfile not found!\n"); 
     }

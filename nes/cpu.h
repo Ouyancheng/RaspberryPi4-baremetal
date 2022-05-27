@@ -1,7 +1,8 @@
 #pragma once 
 #include "sdk.h"
-#include "cpu_opcodes.h"
 #include "bus.h"
+#include "cpu_opcodes.h"
+#include "cpu_exec.h"
 enum cpuflags {
     flag_carry             = UINT8_C(0b00000001),
     flag_zero              = UINT8_C(0b00000010),
@@ -14,6 +15,7 @@ enum cpuflags {
 };
 
 #define STACK_OFFSET UINT16_C(0x0100) 
+#define SP_RESET 0xFD 
 struct cpustate {
     uint8_t  a; 
     uint8_t  x; 
@@ -21,6 +23,9 @@ struct cpustate {
     uint8_t  p;  // status 
     uint16_t pc; 
     uint8_t  sp; 
+    // the catchup mechanism 
+    bool page_crossed; 
+    unsigned delayed_cycles; 
 };
 
 extern struct cpustate cpu; 
@@ -51,4 +56,15 @@ uint16_t cpu_get_address(enum addressmode mode, uint16_t addr);
 
 
 
-
+enum cpu_interrupt {
+    cpu_interrupt_nmi     = UINT16_C(0),
+    cpu_interrupt_reset   = UINT16_C(1), 
+    cpu_interrupt_irq_brk = UINT16_C(2) 
+};
+#define INTERRUPT_VECTOR_BASE (UINT16_C(0xFFFA))
+struct cpu_interrupt_info {
+    enum cpu_interrupt type; // also contains the handler address 
+    uint8_t flag_mask; 
+    unsigned cycles; 
+};
+extern struct cpu_interrupt_info irq_info[3];

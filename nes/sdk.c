@@ -7,6 +7,7 @@ int panic_at(const char *file, int line, const char *function, const char *forma
     n += printf("At file: %s:%d function %s...\nPANIC: ", file, line, function); 
     n += vprintf(format, args); 
     va_end(args); 
+    exit(1); 
     return n; 
 }
 

@@ -95,7 +95,24 @@ void dump_cpu(void) {
     printf("\n"); 
 
 }
-
+void cpu_dump_state(void) {
+    printf(
+        "cpustate = {\n"
+        "    .a = %02x,\n"
+        "    .x = %02x,\n"
+        "    .y = %02x,\n"
+        "    .p = %02x,\n"
+        "    .pc = %04x,\n" 
+        "    .sp = %02x,\n"
+        "};\n", 
+        cpu.a, 
+        cpu.x, 
+        cpu.y, 
+        cpu.p, 
+        cpu.pc, 
+        cpu.sp 
+    );
+}
 
 
 

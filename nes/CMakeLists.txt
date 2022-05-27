@@ -12,6 +12,7 @@ set(nes_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}")
 set(nes_code_files 
     cpu.c 
     cpu_opcodes.c
+    cpu_exec.c 
     main.c 
     sdk.c 
     bus.c 

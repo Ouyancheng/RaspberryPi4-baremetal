@@ -8,6 +8,7 @@ struct nes_rom rom;
 void bus_init(struct nes_rom bus_rom) {
     memset((uint8_t*)cpu_ram, 0, CPU_RAM_SIZE); 
     rom = bus_rom;
+    ppu_init(rom.chr_rom, rom.chr_rom_size, rom.mirroring); 
 }
 uint8_t bus_read(uint16_t addr) {
     if (0x0000 <= addr && addr < 0x2000) {
@@ -99,4 +100,22 @@ uint8_t read_prg_rom(uint16_t addr) {
     }
     return rom.prg_rom[addr]; 
 }
+
+void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
+    ppu_tick_cycles(cpu_cycles * 3); 
+}
+bool bus_poll_nmi(void) {
+    if (ppu.nmi_raised) {
+        ppu.nmi_raised = false; 
+        return true; 
+    } else {
+        return false; 
+    }
+}
+
+
+
+
+
+
 

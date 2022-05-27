@@ -10,3 +10,10 @@ uint8_t bus_read(uint16_t addr);
 void bus_write(uint16_t addr, uint8_t value); 
 uint8_t read_prg_rom(uint16_t addr); 
 extern struct nes_rom rom; 
+
+
+
+void bus_catch_up_cpu_cycles(unsigned cpu_cycles); 
+
+bool bus_poll_nmi(void); 
+
