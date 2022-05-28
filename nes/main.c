@@ -1,6 +1,7 @@
 #include "sdk.h"
 #include "cpu.h"
 #include "cpu_debug.h"
+#include "display_interface.h"
 #ifdef PLATFORM_UNIX 
 #include "SDL2/SDL.h"
 #include <stdbool.h>
@@ -194,15 +195,15 @@ void callback(void) {
         if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch) != 0) {
             panic("failed to lock texture!\n"); 
         } 
-        memcpy(pixels, framebuffer, 32*32*4); 
-        // for (int y = 0; y < 32; ++y) {
-        //     for (int x = 0; x < 32; ++x) {
-        //         pixels[y*pitch + 4*x]   = framebuffer[y*32+x].a;
-        //         pixels[y*pitch + 4*x+1] = framebuffer[y*32+x].b;
-        //         pixels[y*pitch + 4*x+2] = framebuffer[y*32+x].g;
-        //         pixels[y*pitch + 4*x+3] = framebuffer[y*32+x].r;
-        //     }
-        // }
+        // memcpy(pixels, framebuffer, 32*32*4); 
+        for (int y = 0; y < 32; ++y) {
+            for (int x = 0; x < 32; ++x) {
+                pixels[y*pitch + 4*x]   = framebuffer[y*32+x].a;
+                pixels[y*pitch + 4*x+1] = framebuffer[y*32+x].b;
+                pixels[y*pitch + 4*x+2] = framebuffer[y*32+x].g;
+                pixels[y*pitch + 4*x+3] = framebuffer[y*32+x].r;
+            }
+        }
         SDL_UnlockTexture(texture); 
         if (SDL_RenderCopy(renderer, texture, NULL, NULL) != 0) {
             panic("failed to copy texture\n"); 
@@ -250,29 +251,35 @@ void test_sdl(void) {
     SDL_Quit();
 #endif 
 }
+void nmi_callback_render_frame(void) {
+    handle_input(); 
+    ppu_render_frame(); 
+    // SDL_Delay(10);
+    // printf("frame %d\n", cnt++); 
+}
 void test_cpu_rom(void) {
     srand(0); 
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        panic("error initializing SDL: %s\n", SDL_GetError());
-    }
-    win = SDL_CreateWindow(
-        "GAME",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        32*10, 32*10, 0
-    );
-    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal"); 
-    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    // if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+    //     panic("error initializing SDL: %s\n", SDL_GetError());
+    // }
+    // win = SDL_CreateWindow(
+    //     "GAME",
+    //     SDL_WINDOWPOS_CENTERED,
+    //     SDL_WINDOWPOS_CENTERED,
+    //     32*10, 32*10, 0
+    // );
+    // SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal"); 
+    // renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderSetScale(renderer, 10.0, 10.0); 
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 32, 32); 
-    if (!texture) {
-        panic("failed to get texture!\n"); 
-    }
-    SDL_SetRenderTarget(renderer, texture);
+    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    // SDL_RenderSetScale(renderer, 10.0, 10.0); 
+    // SDL_RenderClear(renderer);
+    // SDL_RenderPresent(renderer);
+    // texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 32, 32); 
+    // if (!texture) {
+    //     panic("failed to get texture!\n"); 
+    // }
+    // SDL_SetRenderTarget(renderer, texture);
     // if (SDL_LockTexture(texture, NULL, (void**)&pixels, &pitch) != 0) {
     //     panic("failed to lock texture!\n"); 
     // } 
@@ -282,9 +289,15 @@ void test_cpu_rom(void) {
     // cpu_reset(); 
     // cpu_run_with_callback(callback); 
 
-    FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
+
+
+    // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/smb1.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
+    FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/tetrisa.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/Alter_Ego.nes", "rb"); 
     if (!romfile) {
         panic("romfile not found!\n"); 
     }
@@ -296,14 +309,32 @@ void test_cpu_rom(void) {
         panic("rom file read failed!\n"); 
     }
     fclose(romfile); 
-
+    display_init("tile", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 3, 3); 
+    // printf("width=%d height=%d\n", display.width, display.height); 
     struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
+    bus_init(rom, nmi_callback_render_frame); 
     // printf("romsize = %zu, prgsize = %zu, chrsize = %zu\n", romsize, rom.prg_rom_size, rom.chr_rom_size); 
-    bus_init(rom); 
+    // printf("width=%d height=%d\n", display.width, display.height); 
+    // printf("width=%d height=%d\n", display.width, display.height); 
+    // printf("OK!\n"); 
+    // for (int b = 0; b <= 1; ++b) {
+    //     for (int tile = 0; tile < 256; ++tile) {
+    //         ppu_draw_tile(rom.chr_rom, rom.chr_rom_size, b, tile, (tile % 32) * 8, (tile / 32) * 8+b*96); 
+    //     }
+    // }
+    // display_render_frame(); 
+    // while (1) {
+    //     handle_input(); 
+    //     SDL_Delay(100); 
+    // }
+    // display_exit(); 
+    // exit(0); 
+
+    
     cpu_init(); 
     cpu_reset(); 
-    
-    cpu_run_with_callback(callback); 
+    cpu_run(); 
+    // cpu_run_with_callback(callback); 
 
     // cpu.pc = 0xC000; // hack 
     // cpu_run_with_callback(dump_cpu); 

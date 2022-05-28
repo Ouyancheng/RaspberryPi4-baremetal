@@ -12,3 +12,8 @@ int panic_at(const char *file, int line, const char *function, const char *forma
 }
 
 
+void do_nothing(void) {
+    return; 
+}
+
+

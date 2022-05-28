@@ -32,6 +32,7 @@ int panic_at(const char *file, int line, const char *function, const char *forma
 #define panic(...) panic_at(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #define assert(condition) ((condition) ? ((void)0) : ((void)panic("assertion " #condition " failed"))) 
 
+#endif 
 static inline uint8_t set_mask(uint8_t reg, uint8_t mask) {
     reg |= mask; 
     return reg; 
@@ -42,10 +43,7 @@ static inline uint8_t clear_mask(uint8_t reg, uint8_t mask) {
 }
 #define set_mask_inplace(reg, mask) ((reg) |= ((uint8_t)(mask)))
 #define clear_mask_inplace(reg, mask) ((reg) &= (~((uint8_t)(mask))))
-// #define condition_update_mask_inplace(condition, reg, mask) ((condition) ? set_mask_inplace(reg, mask) : clear_mask_inplace(reg, mask))
-#endif 
-
-
+void do_nothing(void);
 
 
 

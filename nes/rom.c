@@ -7,6 +7,7 @@ struct nes_rom load_rom(uint8_t *bytes, size_t rom_size) {
         panic("Error: load_rom not a valid nes rom!\n"); 
     } 
     rom.mapper = ((bytes[7] & 0xF0) | (bytes[6] >> 4)); 
+    printf("rom mapper = %u\n", (unsigned)rom.mapper); 
     uint8_t version = (bytes[7] >> 2) & 0x3; 
     if (version != 0) {
         panic("Error: version %d is not supported\n", version); 

@@ -1,19 +1,19 @@
 #include "bus.h"
 #include "ppu.h"
-uint8_t cpu_ram[CPU_RAM_SIZE]; 
+struct nes_bus bus; 
 
 
-struct nes_rom rom; 
-
-void bus_init(struct nes_rom bus_rom) {
-    memset((uint8_t*)cpu_ram, 0, CPU_RAM_SIZE); 
-    rom = bus_rom;
-    ppu_init(rom.chr_rom, rom.chr_rom_size, rom.mirroring); 
+void bus_init(struct nes_rom bus_rom, void(*nmi_callback)(void)) {
+    memset((uint8_t*)bus.cpu_ram, 0, CPU_RAM_SIZE); 
+    bus.rom = bus_rom;
+    bus.nmi_callback = nmi_callback; 
+    bus.cycles = 0; 
+    ppu_init(bus.rom.chr_rom, bus.rom.chr_rom_size, bus.rom.mirroring); 
 }
 uint8_t bus_read(uint16_t addr) {
     if (0x0000 <= addr && addr < 0x2000) {
         uint16_t actual_addr = addr & UINT16_C(0x07FF); 
-        return cpu_ram[actual_addr]; 
+        return bus.cpu_ram[actual_addr]; 
     }
     else if (0x2000 <= addr && addr < 0x4000) {
         uint16_t actual_addr = addr & UINT16_C(0b0010000000000111);
@@ -30,21 +30,36 @@ uint8_t bus_read(uint16_t addr) {
                 panic("reading invalid ppu register %04x\n", addr); 
                 break; 
         }
-        return 0xFF; 
+        return 0; 
+    }
+    else if (addr == 0x4014) {
+        return 0; 
+    }
+    else if (0x4000 <= addr && addr < 0x4015) {
+        /// TODO: APU 
+        return 0; 
+    }
+    else if (addr == 0x4016) {
+        /// TODO: controller 1 
+        return 0; 
     } 
+    else if (addr == 0x4017) {
+        /// TODO: controller 2 
+        return 0; 
+    }
     else if (0x8000 <= addr) {
         return read_prg_rom(addr); 
     }
     else {
         // printf("reading from address %04x is ignored\n", addr); 
-        return 0xFF; 
+        return 0; 
     }
 }
 
 void bus_write(uint16_t addr, uint8_t value) {
     if (0x0000 <= addr && addr < 0x2000) {
         uint16_t actual_addr = addr & UINT16_C(0x07FF); 
-        cpu_ram[actual_addr] = value; 
+        bus.cpu_ram[actual_addr] = value; 
     }
     else if (0x2000 <= addr && addr < 0x4000) {
         uint16_t actual_addr = addr & UINT16_C(0b0010000000000111);
@@ -85,6 +100,25 @@ void bus_write(uint16_t addr, uint8_t value) {
                 break; 
         }
     } 
+    else if (addr == 0x4014) {
+        // oam dma!!! 
+        uint8_t buffer[256];
+        memset((uint8_t*)buffer, 0, 256); 
+        uint16_t hi = ((uint16_t)value) << 8; 
+        for (int i = 0; i < 256; ++i) {
+            buffer[i] = bus_read(hi + (uint16_t)i); 
+        }
+        ppu_oam_dma((uint8_t*)buffer, 256); 
+        /// NOTE: 
+        /// there's weird timing issue, we  need to add back the cycles for DMA 
+        unsigned compensation = ((bus.cycles % 2) ? 514 : 513); 
+        for (int i = 0; i < compensation; ++i) {
+            bus_catch_up_cpu_cycles(1); 
+        }
+        // if (cycles % 2) compensation = 514; else compensation = 513; 
+        /// bus_catch_up_cpu_cycles(compensation); 
+        /// PPU will have (513 or 514) * 3 cycles, which skips lines, we need to compensate this step by step 
+    }
     else if (0x8000 <= addr) {
         panic("Error: trying to write to PRG ROM space!\n"); 
     }
@@ -95,18 +129,22 @@ void bus_write(uint16_t addr, uint8_t value) {
 
 uint8_t read_prg_rom(uint16_t addr) {
     addr -= UINT16_C(0x8000);
-    if ((rom.prg_rom_size == 0x4000) && (addr >= 0x4000)) {
+    if ((bus.rom.prg_rom_size == 0x4000) && (addr >= 0x4000)) {
         addr %= 0x4000; 
     }
-    return rom.prg_rom[addr]; 
+    return bus.rom.prg_rom[addr]; 
 }
 
 void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
-    ppu_tick_cycles(cpu_cycles * 3); 
+    bus.cycles += cpu_cycles; 
+    if (ppu_tick_cycles(cpu_cycles * 3)) {
+        bus.nmi_callback(); 
+    } 
 }
 bool bus_poll_nmi(void) {
     if (ppu.nmi_raised) {
         ppu.nmi_raised = false; 
+        // bus.nmi_callback(); 
         return true; 
     } else {
         return false; 

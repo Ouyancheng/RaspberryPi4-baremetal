@@ -69,9 +69,12 @@ enum ppu_status_flags {
 
 struct rgb {
     uint8_t a; 
-    uint8_t b; 
-    uint8_t g; 
+    
     uint8_t r; 
+    uint8_t g; 
+    uint8_t b; 
+    
+    
 };
 
 void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror); 
@@ -90,8 +93,12 @@ void ppu_write_oam_data(uint8_t value);
 uint8_t ppu_read_status(void); 
 void ppu_oam_dma(uint8_t *data, unsigned data_size); 
 bool ppu_tick_cycles(unsigned ppu_cycles); 
+void ppu_draw_tile(uint8_t *chr_rom, size_t chr_rom_size, unsigned bank, unsigned ntile, int tilex, int tiley); 
+void ppu_render_frame(void); 
+void ppu_get_palette_for_background_tile(uint8_t *palette_color_indices, unsigned tilex, unsigned tiley); 
+void ppu_get_palette_for_sprite_tile(uint8_t *palette_color_indices, unsigned palette_index); 
 
-
+extern struct rgb tile_palette[64]; 
 
 
 

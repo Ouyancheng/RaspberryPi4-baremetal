@@ -47,9 +47,6 @@ void cpu_reset(void) {
     cpu.p = UINT8_C(0b00100100); 
     cpu.pc = cpu_mem_read16(UINT16_C(0xFFFC)); 
 }
-void do_nothing(void) {
-    return; 
-}
 void cpu_run(void) {
     cpu_run_with_callback(do_nothing); 
 }
