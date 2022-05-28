@@ -5,7 +5,7 @@
 #else 
 #   define INLINE static 
 #endif 
-
+#define SWITCH_ON_OPCODE 1 
 static inline bool page_crossed(uint16_t addr1, uint16_t addr2) {
     return (addr1 & UINT16_C(0xFF00)) != (addr2 & UINT16_C(0xFF00)); 
 }
@@ -459,268 +459,380 @@ void cpu_run_with_callback(void(*func)(void)) {
             printf("Error: cpu_run unknown opcode %x\n", opcode); 
             return; 
         }
-        switch (op.instruction) {
+        switch (
+            #if SWITCH_ON_OPCODE
+            opcode
+            #else 
+            op.instruction
+            #endif 
+        ) {
         /* LDA */
-        // case 0xa9: 
-        // case 0xa5: 
-        // case 0xb5: 
-        // case 0xad: 
-        // case 0xbd: 
-        // case 0xb9: 
-        // case 0xa1: 
-        // case 0xb1: 
+        #if SWITCH_ON_OPCODE
+        case 0xa9: 
+        case 0xa5: 
+        case 0xb5: 
+        case 0xad: 
+        case 0xbd: 
+        case 0xb9: 
+        case 0xa1: 
+        case 0xb1: 
+        #else 
         case LDA:
+        #endif 
             lda(op.addrmode); 
             break; 
-        // case 0xAA: // TAX 
+        #if SWITCH_ON_OPCODE
+        case 0xAA: // TAX 
+        #else 
         case TAX:
+        #endif 
             tax();
             break;
-        // case 0xe8: // INX 
+        #if SWITCH_ON_OPCODE
+        case 0xe8: // INX 
+        #else 
         case INX: 
+        #endif 
             inx(); 
             break; 
-        // case 0x00: // BRK 
+        #if SWITCH_ON_OPCODE
+        case 0x00: // BRK 
+        #else 
         case BRK: 
+        #endif 
             // printf("BRK occurred at pc=0x%04x\n", cpu.pc); 
             return; 
-        
-        // case 0xd8: // CLD 
+        #if SWITCH_ON_OPCODE
+        case 0xd8: // CLD 
+        #else 
         case CLD: 
+        #endif 
             cpu.p &= ~((uint8_t)flag_decimal_mode); 
             break; 
-        // case 0x58: // CLI 
+        #if SWITCH_ON_OPCODE
+        case 0x58: // CLI 
+        #else 
         case CLI: 
+        #endif 
             cpu.p &= ~((uint8_t)flag_interrupt_disable); 
             break; 
-        // case 0xb8: // CLV 
+        #if SWITCH_ON_OPCODE
+        case 0xb8: // CLV 
+        #else 
         case CLV: 
+        #endif 
             cpu.p &= ~((uint8_t)flag_overflow); 
             break; 
-        // case 0x18: // CLC 
+        #if SWITCH_ON_OPCODE
+        case 0x18: // CLC 
+        #else 
         case CLC: 
+        #endif 
             clear_carry(); 
             break; 
-        // case 0x38: // SEC 
+        #if SWITCH_ON_OPCODE
+        case 0x38: // SEC 
+        #else 
         case SEC: 
+        #endif 
             set_carry(); 
             break; 
-        // case 0x78: // SEI 
+        #if SWITCH_ON_OPCODE
+        case 0x78: // SEI 
+        #else 
         case SEI: 
+        #endif 
             cpu.p |= (uint8_t)flag_interrupt_disable; 
             break; 
-        // case 0xf8: // SED 
+        #if SWITCH_ON_OPCODE
+        case 0xf8: // SED 
+        #else 
         case SED: 
+        #endif 
             cpu.p |= (uint8_t)flag_decimal_mode; 
             break; 
-        // case 0x48: // PHA 
+        #if SWITCH_ON_OPCODE
+        case 0x48: // PHA 
+        #else 
         case PHA: 
+        #endif 
             push_stack(cpu.a); 
             break; 
-        // case 0x68: // PLA 
+        #if SWITCH_ON_OPCODE
+        case 0x68: // PLA 
+        #else 
         case PLA: 
+        #endif 
             pla();
             break; 
-        // case 0x08: // PHP 
+        #if SWITCH_ON_OPCODE
+        case 0x08: // PHP 
+        #else 
         case PHP: 
+        #endif 
             php();
             break; 
-        // case 0x28: // PLP 
+        #if SWITCH_ON_OPCODE
+        case 0x28: // PLP 
+        #else 
         case PLP: 
+        #endif 
             plp();
             break; 
         /* ADC */
-        // case 0x69:
-        // case 0x65: 
-        // case 0x75: 
-        // case 0x6d: 
-        // case 0x7d: 
-        // case 0x79: 
-        // case 0x61: 
-        // case 0x71: 
+        #if SWITCH_ON_OPCODE
+        case 0x69:
+        case 0x65: 
+        case 0x75: 
+        case 0x6d: 
+        case 0x7d: 
+        case 0x79: 
+        case 0x61: 
+        case 0x71: 
+        #else 
         case ADC: 
+        #endif 
             adc(op.addrmode);
             break; 
         
 
         /* SBC */
-        // case 0xe9:
-        // case 0xe5: 
-        // case 0xf5: 
-        // case 0xed: 
-        // case 0xfd: 
-        // case 0xf9: 
-        // case 0xe1: 
-        // case 0xf1: 
+        #if SWITCH_ON_OPCODE
+        case 0xe9:
+        case 0xe5: 
+        case 0xf5: 
+        case 0xed: 
+        case 0xfd: 
+        case 0xf9: 
+        case 0xe1: 
+        case 0xf1: 
+        #else 
         case SBC: 
+        #endif 
             sbc(op.addrmode); 
             break; 
         
         /* AND */
-        // case 0x29:
-        // case 0x25: 
-        // case 0x35: 
-        // case 0x2d: 
-        // case 0x3d: 
-        // case 0x39: 
-        // case 0x21: 
-        // case 0x31: 
+        #if SWITCH_ON_OPCODE
+        case 0x29:
+        case 0x25: 
+        case 0x35: 
+        case 0x2d: 
+        case 0x3d: 
+        case 0x39: 
+        case 0x21: 
+        case 0x31: 
+        #else 
         case AND: 
+        #endif 
             and(op.addrmode);
             break; 
 
 
         /* EOR */
-        // case 0x49:
-        // case 0x45: 
-        // case 0x55: 
-        // case 0x4d: 
-        // case 0x5d: 
-        // case 0x59: 
-        // case 0x41: 
-        // case 0x51: 
+        #if SWITCH_ON_OPCODE
+        case 0x49:
+        case 0x45: 
+        case 0x55: 
+        case 0x4d: 
+        case 0x5d: 
+        case 0x59: 
+        case 0x41: 
+        case 0x51: 
+        #else 
         case EOR: 
+        #endif 
             eor(op.addrmode);
             break; 
 
         /* ORA */
-        // case 0x09: 
-        // case 0x05: 
-        // case 0x15: 
-        // case 0x0d: 
-        // case 0x1d: 
-        // case 0x19: 
-        // case 0x01: 
-        // case 0x11: 
+        #if SWITCH_ON_OPCODE
+        case 0x09: 
+        case 0x05: 
+        case 0x15: 
+        case 0x0d: 
+        case 0x1d: 
+        case 0x19: 
+        case 0x01: 
+        case 0x11: 
+        #else 
         case ORA: 
+        #endif 
             ora(op.addrmode);
             break; 
-
-        // case 0x4a: // LSR 
+        #if SWITCH_ON_OPCODE
+        case 0x4a: // LSR 
+        #else 
         case LSR_A: 
+        #endif 
             lsr_A(); 
             break; 
         /* LSR */
-        // case 0x46: 
-        // case 0x56: 
-        // case 0x4e: 
-        // case 0x5e: 
+        #if SWITCH_ON_OPCODE
+        case 0x46: 
+        case 0x56: 
+        case 0x4e: 
+        case 0x5e: 
+        #else 
         case LSR: 
+        #endif 
             lsr(op.addrmode);
             break; 
-
-        // case 0x0a: // ASL 
+        #if SWITCH_ON_OPCODE
+        case 0x0a: // ASL 
+        #else 
         case ASL_A: 
+        #endif 
             asl_A(); 
             break; 
 
         /* ASL */
-        // case 0x06:
-        // case 0x16: 
-        // case 0x0e: 
-        // case 0x1e: 
+        #if SWITCH_ON_OPCODE
+        case 0x06:
+        case 0x16: 
+        case 0x0e: 
+        case 0x1e: 
+        #else 
         case ASL: 
+        #endif 
             asl(op.addrmode);
             break; 
-
-        // case 0x2a: // ROL accumulator 
+        #if SWITCH_ON_OPCODE
+        case 0x2a: // ROL accumulator 
+        #else 
         case ROL_A: 
+        #endif 
             rol_A(); 
             break; 
 
         /* ROL */
-        // case 0x26: 
-        // case 0x36: 
-        // case 0x2e: 
-        // case 0x3e: 
+        #if SWITCH_ON_OPCODE
+        case 0x26: 
+        case 0x36: 
+        case 0x2e: 
+        case 0x3e: 
+        #else 
         case ROL: 
+        #endif 
             rol(op.addrmode);
             break; 
 
-
-        // case 0x6a: // ROR accumulator 
+        #if SWITCH_ON_OPCODE
+        case 0x6a: // ROR accumulator 
+        #else 
         case ROR_A: 
+        #endif 
             ror_A(); 
             break; 
 
         /* ROR */
-        // case 0x66: 
-        // case 0x76: 
-        // case 0x6e: 
-        // case 0x7e: 
+        #if SWITCH_ON_OPCODE
+        case 0x66: 
+        case 0x76: 
+        case 0x6e: 
+        case 0x7e: 
+        #else 
         case ROR: 
+        #endif 
             ror(op.addrmode);
             break; 
 
         /* INC */
-        // case 0xe6: 
-        // case 0xf6: 
-        // case 0xee: 
-        // case 0xfe: 
+        #if SWITCH_ON_OPCODE
+        case 0xe6: 
+        case 0xf6: 
+        case 0xee: 
+        case 0xfe: 
+        #else 
         case INC: 
+        #endif 
             inc(op.addrmode);
             break; 
         
 
         /* INY */
-        // case 0xc8: 
+        #if SWITCH_ON_OPCODE
+        case 0xc8: 
+        #else 
         case INY: 
+        #endif 
             iny(); 
             break; 
 
         /* DEC */
-        // case 0xc6: 
-        // case 0xd6: 
-        // case 0xce: 
-        // case 0xde: 
+        #if SWITCH_ON_OPCODE
+        case 0xc6: 
+        case 0xd6: 
+        case 0xce: 
+        case 0xde: 
+        #else 
         case DEC: 
+        #endif 
             dec(op.addrmode);
             break; 
 
         /* DEX */
-        // case 0xca: 
+        #if SWITCH_ON_OPCODE
+        case 0xca: 
+        #else 
         case DEX: 
+        #endif 
             dex();
             break; 
 
         /* DEY */
-        // case 0x88:
+        #if SWITCH_ON_OPCODE
+        case 0x88:
+        #else 
         case DEY:  
+        #endif 
             dey();
             break; 
         
         /* CMP */
-        // case 0xc9: 
-        // case 0xc5: 
-        // case 0xd5: 
-        // case 0xcd: 
-        // case 0xdd: 
-        // case 0xd9: 
-        // case 0xc1: 
-        // case 0xd1: 
+        #if SWITCH_ON_OPCODE
+        case 0xc9: 
+        case 0xc5: 
+        case 0xd5: 
+        case 0xcd: 
+        case 0xdd: 
+        case 0xd9: 
+        case 0xc1: 
+        case 0xd1: 
+        #else 
         case CMP: 
+        #endif 
             compare(op.addrmode, cpu.a);
             break; 
 
         /* CPY */
-        // case 0xc0: 
-        // case 0xc4: 
-        // case 0xcc: 
+        #if SWITCH_ON_OPCODE
+        case 0xc0: 
+        case 0xc4: 
+        case 0xcc: 
+        #else 
         case CPY: 
+        #endif 
             compare(op.addrmode, cpu.y);
             break; 
 
         /* CPX */
-        // case 0xe0: 
-        // case 0xe4: 
-        // case 0xec: 
+        #if SWITCH_ON_OPCODE
+        case 0xe0: 
+        case 0xe4: 
+        case 0xec: 
+        #else 
         case CPX: 
+        #endif 
             compare(op.addrmode, cpu.x); 
             break; 
 
         /* JMP Absolute */
-        // case 0x4c: 
+        #if SWITCH_ON_OPCODE
+        case 0x4c: 
+        #else 
         case JMP_ABS: 
+        #endif 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc);
             cpu.pc = mem_address;
@@ -728,8 +840,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* JMP Indirect */
-        // case 0x6c: 
+        #if SWITCH_ON_OPCODE
+        case 0x6c: 
+        #else 
         case JMP: 
+        #endif 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc);
             // 6502 bug mode with with page boundary:
@@ -750,8 +865,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* JSR */
-        // case 0x20: 
+        #if SWITCH_ON_OPCODE
+        case 0x20: 
+        #else 
         case JSR: 
+        #endif 
         {
             push_stack_uint16(cpu.pc + 2 - 1);
             uint16_t target_address = cpu_mem_read16(cpu.pc);
@@ -761,14 +879,20 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* RTS */
-        // case 0x60: 
+        #if SWITCH_ON_OPCODE
+        case 0x60: 
+        #else 
         case RTS: 
+        #endif 
             cpu.pc = pop_stack_uint16() + 1;
             break;  
 
         /* RTI */
-        // case 0x40: 
+        #if SWITCH_ON_OPCODE
+        case 0x40: 
+        #else 
         case RTI: 
+        #endif 
         {
             cpu.p = pop_stack(); 
             cpu.p &= ~((uint8_t)flag_break); 
@@ -778,8 +902,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* BNE */
-        // case 0xd0: 
+        #if SWITCH_ON_OPCODE
+        case 0xd0: 
+        #else 
         case BNE: 
+        #endif 
         {
             branch(
                 !(cpu.p & (uint8_t)flag_zero)
@@ -788,153 +915,210 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* BVS */
-        // case 0x70: 
+        #if SWITCH_ON_OPCODE
+        case 0x70: 
+        #else 
         case BVS: 
+        #endif 
         {
             branch((cpu.p & (uint8_t)flag_overflow) != 0);
             break; 
         }
 
         /* BVC */
-        // case 0x50: 
+        #if SWITCH_ON_OPCODE
+        case 0x50: 
+        #else 
         case BVC: 
+        #endif 
         {
             branch(!(cpu.p & (uint8_t)flag_overflow));
             break; 
         }
 
         /* BPL */
-        // case 0x10: 
+        #if SWITCH_ON_OPCODE
+        case 0x10: 
+        #else 
         case BPL: 
+        #endif 
         {
             branch(!(cpu.p & (uint8_t)flag_negative));
             break; 
         }
 
         /* BMI */
-        // case 0x30: 
+        #if SWITCH_ON_OPCODE
+        case 0x30: 
+        #else 
         case BMI: 
+        #endif 
         {
             branch((cpu.p & (uint8_t)flag_negative) != 0);
             break; 
         }
 
         /* BEQ */
-        // case 0xf0: 
+        #if SWITCH_ON_OPCODE
+        case 0xf0: 
+        #else 
         case BEQ: 
+        #endif 
         {
             branch((cpu.p & (uint8_t)flag_zero) != 0);
             break; 
         }
 
         /* BCS */
-        // case 0xb0: 
+        #if SWITCH_ON_OPCODE
+        case 0xb0: 
+        #else 
         case BCS: 
+        #endif 
         {
             branch((cpu.p & (uint8_t)flag_carry) != 0);
             break; 
         }
 
         /* BCC */
-        // case 0x90: 
+        #if SWITCH_ON_OPCODE
+        case 0x90: 
+        #else 
         case BCC: 
+        #endif 
         {
             branch(!(cpu.p & (uint8_t)flag_carry));
             break; 
         }
 
         /* BIT */
-        // case 0x24: 
-        // case 0x2c: 
+        #if SWITCH_ON_OPCODE
+        case 0x24: 
+        case 0x2c: 
+        #else 
         case BIT: 
+        #endif 
             bit(op.addrmode);
             break; 
         
 
         /* STA */
-        // case 0x85: 
-        // case 0x95: 
-        // case 0x8d: 
-        // case 0x9d: 
-        // case 0x99: 
-        // case 0x81: 
-        // case 0x91: 
+        #if SWITCH_ON_OPCODE
+        case 0x85: 
+        case 0x95: 
+        case 0x8d: 
+        case 0x9d: 
+        case 0x99: 
+        case 0x81: 
+        case 0x91: 
+        #else 
         case STA: 
+        #endif 
             sta(op.addrmode);
             break; 
 
         /* STX */
-        // case 0x86: 
-        // case 0x96: 
-        // case 0x8e: 
+        #if SWITCH_ON_OPCODE
+        case 0x86: 
+        case 0x96: 
+        case 0x8e: 
+        #else 
         case STX: 
+        #endif 
             cpu_mem_write(get_address(op.addrmode), cpu.x);
             break; 
 
         /* STY */
-        // case 0x84: 
-        // case 0x94: 
-        // case 0x8c: 
+        #if SWITCH_ON_OPCODE
+        case 0x84: 
+        case 0x94: 
+        case 0x8c: 
+        #else 
         case STY: 
+        #endif 
             cpu_mem_write(get_address(op.addrmode), cpu.y);
             break; 
 
         /* LDX */
-        // case 0xa2: 
-        // case 0xa6: 
-        // case 0xb6: 
-        // case 0xae: 
-        // case 0xbe: 
+        #if SWITCH_ON_OPCODE
+        case 0xa2: 
+        case 0xa6: 
+        case 0xb6: 
+        case 0xae: 
+        case 0xbe: 
+        #else 
         case LDX: 
+        #endif 
             ldx(op.addrmode);
             break; 
         
 
         /* LDY */
-        // case 0xa0: 
-        // case 0xa4: 
-        // case 0xb4: 
-        // case 0xac: 
-        // case 0xbc: 
+        #if SWITCH_ON_OPCODE
+        case 0xa0: 
+        case 0xa4: 
+        case 0xb4: 
+        case 0xac: 
+        case 0xbc: 
+        #else 
         case LDY: 
+        #endif 
             ldy(op.addrmode);
             break;
 
         /* NOP */
-        // case 0xea: 
+        #if SWITCH_ON_OPCODE
+        case 0xea: 
+        #else 
         case NOP: 
+        #endif 
             break; 
 
         /* TAY */
-        // case 0xa8: 
+        #if SWITCH_ON_OPCODE
+        case 0xa8: 
+        #else 
         case TAY: 
+        #endif 
             cpu.y = cpu.a; 
             update_flags_zn(cpu.y);
             break; 
 
         /* TSX */
-        // case 0xba: 
+        #if SWITCH_ON_OPCODE
+        case 0xba: 
+        #else 
         case TSX: 
+        #endif 
             cpu.x = cpu.sp;
             update_flags_zn(cpu.x);
             break; 
 
         /* TXA */
-        // case 0x8a: 
+        #if SWITCH_ON_OPCODE
+        case 0x8a: 
+        #else 
         case TXA: 
+        #endif 
             cpu.a = cpu.x; 
             update_flags_zn(cpu.a);
             break; 
 
         /* TXS */
-        // case 0x9a: 
+        #if SWITCH_ON_OPCODE
+        case 0x9a: 
+        #else 
         case TXS: 
+        #endif 
             cpu.sp = cpu.x;
             break; 
 
         /* TYA */
-        // case 0x98: 
+        #if SWITCH_ON_OPCODE
+        case 0x98: 
+        #else 
         case TYA: 
+        #endif 
             cpu.a = cpu.y;
             update_flags_zn(cpu.a);
             break; 
@@ -945,14 +1129,17 @@ void cpu_run_with_callback(void(*func)(void)) {
         /// Source: https://github.com/bugzmanov/nes_ebook/blob/master/code/ch5.1/src/cpu.rs
 
         /* DCP */
-        // case 0xc7: 
-        // case 0xd7: 
-        // case 0xcf: 
-        // case 0xdf: 
-        // case 0xdb: 
-        // case 0xd3: 
-        // case 0xc3: 
+        #if SWITCH_ON_OPCODE
+        case 0xc7: 
+        case 0xd7: 
+        case 0xcf: 
+        case 0xdf: 
+        case 0xdb: 
+        case 0xd3: 
+        case 0xc3: 
+        #else 
         case _DCP: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -966,14 +1153,17 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* RLA */
-        // case 0x27: 
-        // case 0x37: 
-        // case 0x2F: 
-        // case 0x3F: 
-        // case 0x3b: 
-        // case 0x33: 
-        // case 0x23: 
+        #if SWITCH_ON_OPCODE
+        case 0x27: 
+        case 0x37: 
+        case 0x2F: 
+        case 0x3F: 
+        case 0x3b: 
+        case 0x33: 
+        case 0x23: 
+        #else 
         case _RLA: 
+        #endif 
         {
             uint8_t data = rol(op.addrmode); 
             set_A(data & cpu.a); 
@@ -981,14 +1171,17 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SLO */ // tests? 
-        // case 0x07: 
-        // case 0x17: 
-        // case 0x0F: 
-        // case 0x1f: 
-        // case 0x1b: 
-        // case 0x03: 
-        // case 0x13: 
+        #if SWITCH_ON_OPCODE
+        case 0x07: 
+        case 0x17: 
+        case 0x0F: 
+        case 0x1f: 
+        case 0x1b: 
+        case 0x03: 
+        case 0x13: 
+        #else 
         case _SLO: 
+        #endif 
         {
             uint8_t data = asl(op.addrmode); 
             set_A(data | cpu.a); 
@@ -996,14 +1189,17 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SRE */ // tests? 
-        // case 0x47: 
-        // case 0x57: 
-        // case 0x4F: 
-        // case 0x5f: 
-        // case 0x5b: 
-        // case 0x43: 
-        // case 0x53: 
+        #if SWITCH_ON_OPCODE
+        case 0x47: 
+        case 0x57: 
+        case 0x4F: 
+        case 0x5f: 
+        case 0x5b: 
+        case 0x43: 
+        case 0x53: 
+        #else 
         case _SRE: 
+        #endif 
         {
             uint8_t data = lsr(op.addrmode); 
             set_A(data ^ cpu.a); 
@@ -1011,12 +1207,15 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SKB */
-        // case 0x80: 
-        // case 0x82: 
-        // case 0x89: 
-        // case 0xc2: 
-        // case 0xe2:  
+        #if SWITCH_ON_OPCODE
+        case 0x80: 
+        case 0x82: 
+        case 0x89: 
+        case 0xc2: 
+        case 0xe2:  
+        #else 
         case _SKB: 
+        #endif 
         {
             /* 2 byte NOP */
             // ? 
@@ -1024,8 +1223,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* AXS */
-        // case 0xCB:  
+        #if SWITCH_ON_OPCODE
+        case 0xCB:  
+        #else 
         case _AXS: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1040,8 +1242,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ARR */
-        // case 0x6B:  
+        #if SWITCH_ON_OPCODE
+        case 0x6B:  
+        #else 
         case _ARR: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1066,8 +1271,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* unofficial SBC */
-        // case 0xeb: 
+        #if SWITCH_ON_OPCODE
+        case 0xeb: 
+        #else 
         case _SBC: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             int8_t data = cpu_mem_read(addr); 
@@ -1076,9 +1284,12 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ANC */
-        // case 0x0b: 
-        // case 0x2b: 
+        #if SWITCH_ON_OPCODE
+        case 0x0b: 
+        case 0x2b: 
+        #else 
         case _ANC: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1092,8 +1303,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ALR */
-        // case 0x4b: 
+        #if SWITCH_ON_OPCODE
+        case 0x4b: 
+        #else 
         case _ALR: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1105,23 +1319,26 @@ void cpu_run_with_callback(void(*func)(void)) {
         // test for everything below
 
         /* NOP read */
-        // case 0x04: 
-        // case 0x44: 
-        // case 0x64: 
-        // case 0x14: 
-        // case 0x34: 
-        // case 0x54: 
-        // case 0x74: 
-        // case 0xd4: 
-        // case 0xf4: 
-        // case 0x0c: 
-        // case 0x1c: 
-        // case 0x3c: 
-        // case 0x5c: 
-        // case 0x7c: 
-        // case 0xdc: 
-        // case 0xfc: 
+        #if SWITCH_ON_OPCODE
+        case 0x04: 
+        case 0x44: 
+        case 0x64: 
+        case 0x14: 
+        case 0x34: 
+        case 0x54: 
+        case 0x74: 
+        case 0xd4: 
+        case 0xf4: 
+        case 0x0c: 
+        case 0x1c: 
+        case 0x3c: 
+        case 0x5c: 
+        case 0x7c: 
+        case 0xdc: 
+        case 0xfc: 
+        #else 
         case _NOP_R: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1132,14 +1349,17 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* RRA */
-        // case 0x67: 
-        // case 0x77: 
-        // case 0x6f: 
-        // case 0x7f: 
-        // case 0x7b: 
-        // case 0x63: 
-        // case 0x73: 
+        #if SWITCH_ON_OPCODE
+        case 0x67: 
+        case 0x77: 
+        case 0x6f: 
+        case 0x7f: 
+        case 0x7b: 
+        case 0x63: 
+        case 0x73: 
+        #else 
         case _RRA: 
+        #endif 
         {
             uint8_t data = ror(op.addrmode); 
             add_to_A(data); 
@@ -1147,14 +1367,17 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ISB */
-        // case 0xe7: 
-        // case 0xf7: 
-        // case 0xef: 
-        // case 0xff: 
-        // case 0xfb: 
-        // case 0xe3: 
-        // case 0xf3: 
+        #if SWITCH_ON_OPCODE
+        case 0xe7: 
+        case 0xf7: 
+        case 0xef: 
+        case 0xff: 
+        case 0xfb: 
+        case 0xe3: 
+        case 0xf3: 
+        #else 
         case _ISB: 
+        #endif 
         {
             int8_t data = (int8_t)inc(op.addrmode); 
             add_to_A((uint8_t)(-data - INT8_C(1))); 
@@ -1162,37 +1385,43 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* NOPs */
-        // case 0x02: 
-        // case 0x12: 
-        // case 0x22: 
-        // case 0x32: 
-        // case 0x42: 
-        // case 0x52: 
-        // case 0x62: 
-        // case 0x72: 
-        // case 0x92: 
-        // case 0xb2: 
-        // case 0xd2: 
-        // case 0xf2: 
+        #if SWITCH_ON_OPCODE
+        case 0x02: 
+        case 0x12: 
+        case 0x22: 
+        case 0x32: 
+        case 0x42: 
+        case 0x52: 
+        case 0x62: 
+        case 0x72: 
+        case 0x92: 
+        case 0xb2: 
+        case 0xd2: 
+        case 0xf2: 
             // break; 
 
-        // case 0x1a: 
-        // case 0x3a: 
-        // case 0x5a: 
-        // case 0x7a: 
-        // case 0xda: 
-        // case 0xfa: 
+        case 0x1a: 
+        case 0x3a: 
+        case 0x5a: 
+        case 0x7a: 
+        case 0xda: 
+        case 0xfa: 
+        #else 
         case _NOP: 
+        #endif 
             break; 
 
         /* LAX */
-        // case 0xa7: 
-        // case 0xb7: 
-        // case 0xaf: 
-        // case 0xbf: 
-        // case 0xa3: 
-        // case 0xb3: 
+        #if SWITCH_ON_OPCODE
+        case 0xa7: 
+        case 0xb7: 
+        case 0xaf: 
+        case 0xbf: 
+        case 0xa3: 
+        case 0xb3: 
+        #else 
         case _LAX: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1202,11 +1431,14 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SAX */
-        // case 0x87: 
-        // case 0x97: 
-        // case 0x8f: 
-        // case 0x83: 
+        #if SWITCH_ON_OPCODE
+        case 0x87: 
+        case 0x97: 
+        case 0x8f: 
+        case 0x83: 
+        #else 
         case _SAX: 
+        #endif 
         {
             uint8_t data = cpu.a & cpu.x; 
             uint16_t addr = get_address(op.addrmode); 
@@ -1215,8 +1447,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* LXA */
-        // case 0xab: 
+        #if SWITCH_ON_OPCODE
+        case 0xab: 
+        #else 
         case _LXA: 
+        #endif 
         {
             lda(op.addrmode); 
             tax(); 
@@ -1224,8 +1459,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* XAA */
-        // case 0x8b: 
+        #if SWITCH_ON_OPCODE
+        case 0x8b: 
+        #else 
         case _XAA: 
+        #endif 
         {
             cpu.a = cpu.x; 
             update_flags_zn(cpu.a); 
@@ -1236,8 +1474,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* LAS */
-        // case 0xbb: 
+        #if SWITCH_ON_OPCODE
+        case 0xbb: 
+        #else 
         case _LAS: 
+        #endif 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1250,8 +1491,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* TAS */
-        // case 0x9b: 
+        #if SWITCH_ON_OPCODE
+        case 0x9b: 
+        #else 
         case _TAS: 
+        #endif 
         {
             uint8_t data = cpu.a & cpu.x; 
             cpu.sp = data; 
@@ -1263,8 +1507,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* AHX  Indirect Y */
-        // case 0x93: 
+        #if SWITCH_ON_OPCODE
+        case 0x93: 
+        #else 
         case _AHX_IND_Y: 
+        #endif
         {
             uint8_t pos = cpu_mem_read(cpu.pc); 
             uint16_t mem_address = cpu_mem_read16(pos) + (uint16_t)cpu.y; 
@@ -1274,8 +1521,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* AHX Absolute Y*/
-        // case 0x9f: 
+        #if SWITCH_ON_OPCODE
+        case 0x9f: 
+        #else 
         case _AHX_ABS_Y: 
+        #endif 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
             uint8_t data = cpu.a & cpu.x & (uint8_t)(mem_address >> 8); 
@@ -1284,8 +1534,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SHX */
-        // case 0x9e: 
+        #if SWITCH_ON_OPCODE
+        case 0x9e: 
+        #else 
         case _SHX: 
+        #endif 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
             // if cross page boundry {
@@ -1297,8 +1550,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SHY */
-        // case 0x9c: 
+        #if SWITCH_ON_OPCODE
+        case 0x9c: 
+        #else 
         case _SHY: 
+        #endif 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.x; 
             uint8_t data = cpu.y & ((uint8_t)(mem_address >> 8) + 1); 

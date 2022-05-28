@@ -355,8 +355,8 @@ void test_cpu_rom(void) {
     // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/smb1.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
-    FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
+    FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
     // FILE *romfile = fopen("../testroms/tetrisa.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/Alter_Ego.nes", "rb"); 
     if (!romfile) {
