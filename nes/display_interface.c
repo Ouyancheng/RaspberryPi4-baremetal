@@ -38,6 +38,7 @@ void display_init(const char *const title, int width, int height, int scaling_w,
     display.surface = 0; 
     display.width = width; 
     display.height = height; 
+    display.last_tick = 0; 
     memset((uint8_t*)display.framebuffer, 0, sizeof(struct rgb) * NES_DISPLAY_WIDTH * NES_DISPLAY_HEIGHT); 
 }
 

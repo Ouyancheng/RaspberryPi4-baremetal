@@ -2,6 +2,7 @@
 #include "cpu.h"
 #include "cpu_debug.h"
 #include "display_interface.h"
+#include "controller.h" 
 #ifdef PLATFORM_UNIX 
 #include "SDL2/SDL.h"
 #include <stdbool.h>
@@ -251,10 +252,70 @@ void test_sdl(void) {
     SDL_Quit();
 #endif 
 }
+void controller_handle_input(unsigned timeout) {
+    SDL_Event e;
+    bool quit = false;
+    int ret; 
+    if (timeout == 0) {
+        ret = SDL_PollEvent(&e); 
+    } else {
+        ret = SDL_WaitEventTimeout(&e, (int)timeout); 
+    }
+    if (!ret) { return; }
+    if (e.type == SDL_QUIT) {
+        cleanup_and_exit(0); 
+    }
+    if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
+        // SDL_KeyboardEvent key = e.key; 
+        // SDL_Keysym keysym = key.keysym; 
+        SDL_Keycode keycode = e.key.keysym.sym; 
+        bool set_key = e.type == SDL_KEYDOWN; 
+        switch (keycode) {
+            case SDLK_w: 
+                controller_latch_button(&controller1, controller_button_up, set_key); 
+                break; 
+            case SDLK_a: 
+                controller_latch_button(&controller1, controller_button_left, set_key); 
+                break; 
+            case SDLK_s: 
+                controller_latch_button(&controller1, controller_button_down, set_key); 
+                break; 
+            case SDLK_d: 
+                controller_latch_button(&controller1, controller_button_right, set_key); 
+                break; 
+            case SDLK_j:
+                controller_latch_button(&controller1, controller_button_button_b, set_key);  
+                break; 
+            case SDLK_k: 
+                controller_latch_button(&controller1, controller_button_button_a, set_key);  
+                break; 
+            case SDLK_SPACE: 
+                controller_latch_button(&controller1, controller_button_start, set_key);  
+                break; 
+            case SDLK_TAB: 
+                controller_latch_button(&controller1, controller_button_select, set_key);  
+                break; 
+            case SDLK_ESCAPE: 
+            case SDLK_q: 
+                if (e.type == SDL_KEYDOWN) {
+                    cleanup_and_exit(0); 
+                }
+                break; 
+            default: 
+                break; 
+        }
+    }
+}
 void nmi_callback_render_frame(void) {
-    handle_input(); 
     ppu_render_frame(); 
-    // SDL_Delay(10);
+    controller_handle_input(0); 
+    uint32_t tick = SDL_GetTicks(); 
+    // while (tick - display.last_tick <= 10) {
+    //     controller_handle_input(10 - (tick - display.last_tick)); 
+    //     tick = SDL_GetTicks(); 
+    // }
+    SDL_Delay(16);
+    display.last_tick = SDL_GetTicks();
     // printf("frame %d\n", cnt++); 
 }
 void test_cpu_rom(void) {
@@ -294,8 +355,8 @@ void test_cpu_rom(void) {
     // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/smb1.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
-    FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
+    FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
     // FILE *romfile = fopen("../testroms/tetrisa.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/Alter_Ego.nes", "rb"); 
     if (!romfile) {

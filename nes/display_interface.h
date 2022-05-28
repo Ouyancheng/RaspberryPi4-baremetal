@@ -20,6 +20,7 @@ struct display_device {
     int          pitch;
     int          width; 
     int          height; 
+    uint32_t     last_tick; 
     struct rgb   framebuffer[NES_DISPLAY_WIDTH*NES_DISPLAY_HEIGHT+1]; 
 };
 

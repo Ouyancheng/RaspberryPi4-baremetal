@@ -1,5 +1,6 @@
 #include "bus.h"
 #include "ppu.h"
+#include "controller.h"
 struct nes_bus bus; 
 
 
@@ -35,17 +36,17 @@ uint8_t bus_read(uint16_t addr) {
     else if (addr == 0x4014) {
         return 0; 
     }
-    else if (0x4000 <= addr && addr < 0x4015) {
+    else if (0x4000 <= addr && addr <= 0x4015) {
         /// TODO: APU 
         return 0; 
     }
     else if (addr == 0x4016) {
-        /// TODO: controller 1 
-        return 0; 
+        /// NOTE: 0x4016 controller 1 
+        return controller_read(&controller1); 
     } 
     else if (addr == 0x4017) {
-        /// TODO: controller 2 
-        return 0; 
+        /// NOTE: 0x4017 controller 2 
+        return controller_read(&controller2); 
     }
     else if (0x8000 <= addr) {
         return read_prg_rom(addr); 
@@ -118,6 +119,15 @@ void bus_write(uint16_t addr, uint8_t value) {
         // if (cycles % 2) compensation = 514; else compensation = 513; 
         /// bus_catch_up_cpu_cycles(compensation); 
         /// PPU will have (513 or 514) * 3 cycles, which skips lines, we need to compensate this step by step 
+    }
+    else if (addr == 0x4016) {
+        controller_write(&controller1, value); 
+    } 
+    else if (addr == 0x4017) {
+        controller_write(&controller2, value); 
+    }
+    else if (0x4000 <= addr && addr <= 0x4015) {
+        // APU address 
     }
     else if (0x8000 <= addr) {
         panic("Error: trying to write to PRG ROM space!\n"); 
