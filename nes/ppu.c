@@ -167,6 +167,7 @@ void ppu_oam_dma(uint8_t *data, unsigned data_size) {
     }
 }
 bool ppu_tick_cycles(unsigned ppu_cycles) {
+    ////// TODO: render pixel on a tick!!!!!!
     // printf("ppu_tick %u scanline=%u\n", ppu.cycles, ppu.scanline);
     ppu.cycles += ppu_cycles; 
     if (ppu.cycles >= 341) {
