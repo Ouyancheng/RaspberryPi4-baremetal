@@ -45,9 +45,9 @@ static void test_opcode(void) {
     int invalid_count = 0; 
     int valid_count = 0; 
     for (unsigned i = 0; i < 0x100U; ++i) {
-        if (opcodes[i].opcode != i || opcodes[i].length == 0) {
-            printf("opcode %x is %x\n", i, opcodes[i].opcode); 
-            // printf("[0x%02x] = {.name=\"???\", .length=0, .cycles=0, .addrmode=addressmode_none, .opcode=0x%02x},\n", i, i); 
+        if (opcodes[i].instruction == 0 || opcodes[i].length == 0) {
+            // printf("opcode %x is %x\n", i, opcodes[i].opcode); 
+            printf("[0x%02x] = {.name=\"???\", .length=0, .cycles=0, .addrmode=addressmode_none, .opcode=0x%02x},\n", i, i); 
             invalid_count += 1; 
         } else {
             valid_count += 1;

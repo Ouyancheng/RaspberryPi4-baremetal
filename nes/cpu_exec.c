@@ -459,240 +459,279 @@ void cpu_run_with_callback(void(*func)(void)) {
             printf("Error: cpu_run unknown opcode %x\n", opcode); 
             return; 
         }
-        switch (opcode) {
+        switch (op.instruction) {
         /* LDA */
-        case 0xa9: 
-        case 0xa5: 
-        case 0xb5: 
-        case 0xad: 
-        case 0xbd: 
-        case 0xb9: 
-        case 0xa1: 
-        case 0xb1: 
+        // case 0xa9: 
+        // case 0xa5: 
+        // case 0xb5: 
+        // case 0xad: 
+        // case 0xbd: 
+        // case 0xb9: 
+        // case 0xa1: 
+        // case 0xb1: 
+        case LDA:
             lda(op.addrmode); 
             break; 
-        case 0xAA: // TAX 
+        // case 0xAA: // TAX 
+        case TAX:
             tax();
             break;
-        case 0xe8: // INX 
+        // case 0xe8: // INX 
+        case INX: 
             inx(); 
             break; 
-        case 0x00: // BRK 
+        // case 0x00: // BRK 
+        case BRK: 
             // printf("BRK occurred at pc=0x%04x\n", cpu.pc); 
             return; 
         
-        case 0xd8: // CLD 
+        // case 0xd8: // CLD 
+        case CLD: 
             cpu.p &= ~((uint8_t)flag_decimal_mode); 
             break; 
-        case 0x58: // CLI 
+        // case 0x58: // CLI 
+        case CLI: 
             cpu.p &= ~((uint8_t)flag_interrupt_disable); 
             break; 
-        case 0xb8: // CLV 
+        // case 0xb8: // CLV 
+        case CLV: 
             cpu.p &= ~((uint8_t)flag_overflow); 
             break; 
-        case 0x18: // CLC 
+        // case 0x18: // CLC 
+        case CLC: 
             clear_carry(); 
             break; 
-        case 0x38: // SEC 
+        // case 0x38: // SEC 
+        case SEC: 
             set_carry(); 
             break; 
-        case 0x78: // SEI 
+        // case 0x78: // SEI 
+        case SEI: 
             cpu.p |= (uint8_t)flag_interrupt_disable; 
             break; 
-        case 0xf8: // SED 
+        // case 0xf8: // SED 
+        case SED: 
             cpu.p |= (uint8_t)flag_decimal_mode; 
             break; 
-        case 0x48: // PHA 
+        // case 0x48: // PHA 
+        case PHA: 
             push_stack(cpu.a); 
             break; 
-        case 0x68: // PLA 
+        // case 0x68: // PLA 
+        case PLA: 
             pla();
             break; 
-        case 0x08: // PHP 
+        // case 0x08: // PHP 
+        case PHP: 
             php();
             break; 
-        case 0x28: // PLP 
+        // case 0x28: // PLP 
+        case PLP: 
             plp();
             break; 
         /* ADC */
-        case 0x69:
-        case 0x65: 
-        case 0x75: 
-        case 0x6d: 
-        case 0x7d: 
-        case 0x79: 
-        case 0x61: 
-        case 0x71: 
+        // case 0x69:
+        // case 0x65: 
+        // case 0x75: 
+        // case 0x6d: 
+        // case 0x7d: 
+        // case 0x79: 
+        // case 0x61: 
+        // case 0x71: 
+        case ADC: 
             adc(op.addrmode);
             break; 
         
 
         /* SBC */
-        case 0xe9:
-        case 0xe5: 
-        case 0xf5: 
-        case 0xed: 
-        case 0xfd: 
-        case 0xf9: 
-        case 0xe1: 
-        case 0xf1: 
+        // case 0xe9:
+        // case 0xe5: 
+        // case 0xf5: 
+        // case 0xed: 
+        // case 0xfd: 
+        // case 0xf9: 
+        // case 0xe1: 
+        // case 0xf1: 
+        case SBC: 
             sbc(op.addrmode); 
             break; 
         
         /* AND */
-        case 0x29:
-        case 0x25: 
-        case 0x35: 
-        case 0x2d: 
-        case 0x3d: 
-        case 0x39: 
-        case 0x21: 
-        case 0x31: 
+        // case 0x29:
+        // case 0x25: 
+        // case 0x35: 
+        // case 0x2d: 
+        // case 0x3d: 
+        // case 0x39: 
+        // case 0x21: 
+        // case 0x31: 
+        case AND: 
             and(op.addrmode);
             break; 
 
 
         /* EOR */
-        case 0x49:
-        case 0x45: 
-        case 0x55: 
-        case 0x4d: 
-        case 0x5d: 
-        case 0x59: 
-        case 0x41: 
-        case 0x51: 
+        // case 0x49:
+        // case 0x45: 
+        // case 0x55: 
+        // case 0x4d: 
+        // case 0x5d: 
+        // case 0x59: 
+        // case 0x41: 
+        // case 0x51: 
+        case EOR: 
             eor(op.addrmode);
             break; 
 
         /* ORA */
-        case 0x09: 
-        case 0x05: 
-        case 0x15: 
-        case 0x0d: 
-        case 0x1d: 
-        case 0x19: 
-        case 0x01: 
-        case 0x11: 
+        // case 0x09: 
+        // case 0x05: 
+        // case 0x15: 
+        // case 0x0d: 
+        // case 0x1d: 
+        // case 0x19: 
+        // case 0x01: 
+        // case 0x11: 
+        case ORA: 
             ora(op.addrmode);
             break; 
 
-        case 0x4a: // LSR 
+        // case 0x4a: // LSR 
+        case LSR_A: 
             lsr_A(); 
             break; 
         /* LSR */
-        case 0x46: 
-        case 0x56: 
-        case 0x4e: 
-        case 0x5e: 
+        // case 0x46: 
+        // case 0x56: 
+        // case 0x4e: 
+        // case 0x5e: 
+        case LSR: 
             lsr(op.addrmode);
             break; 
 
-        case 0x0a: // ASL 
+        // case 0x0a: // ASL 
+        case ASL_A: 
             asl_A(); 
             break; 
 
         /* ASL */
-        case 0x06:
-        case 0x16: 
-        case 0x0e: 
-        case 0x1e: 
+        // case 0x06:
+        // case 0x16: 
+        // case 0x0e: 
+        // case 0x1e: 
+        case ASL: 
             asl(op.addrmode);
             break; 
 
-        case 0x2a: // ROL accumulator 
+        // case 0x2a: // ROL accumulator 
+        case ROL_A: 
             rol_A(); 
             break; 
 
         /* ROL */
-        case 0x26: 
-        case 0x36: 
-        case 0x2e: 
-        case 0x3e: 
+        // case 0x26: 
+        // case 0x36: 
+        // case 0x2e: 
+        // case 0x3e: 
+        case ROL: 
             rol(op.addrmode);
             break; 
 
 
-        case 0x6a: // ROR accumulator 
+        // case 0x6a: // ROR accumulator 
+        case ROR_A: 
             ror_A(); 
             break; 
 
         /* ROR */
-        case 0x66: 
-        case 0x76: 
-        case 0x6e: 
-        case 0x7e: 
+        // case 0x66: 
+        // case 0x76: 
+        // case 0x6e: 
+        // case 0x7e: 
+        case ROR: 
             ror(op.addrmode);
             break; 
 
         /* INC */
-        case 0xe6: 
-        case 0xf6: 
-        case 0xee: 
-        case 0xfe: 
+        // case 0xe6: 
+        // case 0xf6: 
+        // case 0xee: 
+        // case 0xfe: 
+        case INC: 
             inc(op.addrmode);
             break; 
         
 
         /* INY */
-        case 0xc8: 
+        // case 0xc8: 
+        case INY: 
             iny(); 
             break; 
 
         /* DEC */
-        case 0xc6: 
-        case 0xd6: 
-        case 0xce: 
-        case 0xde: 
+        // case 0xc6: 
+        // case 0xd6: 
+        // case 0xce: 
+        // case 0xde: 
+        case DEC: 
             dec(op.addrmode);
             break; 
 
         /* DEX */
-        case 0xca: 
+        // case 0xca: 
+        case DEX: 
             dex();
             break; 
 
         /* DEY */
-        case 0x88: 
+        // case 0x88:
+        case DEY:  
             dey();
             break; 
         
         /* CMP */
-        case 0xc9: 
-        case 0xc5: 
-        case 0xd5: 
-        case 0xcd: 
-        case 0xdd: 
-        case 0xd9: 
-        case 0xc1: 
-        case 0xd1: 
+        // case 0xc9: 
+        // case 0xc5: 
+        // case 0xd5: 
+        // case 0xcd: 
+        // case 0xdd: 
+        // case 0xd9: 
+        // case 0xc1: 
+        // case 0xd1: 
+        case CMP: 
             compare(op.addrmode, cpu.a);
             break; 
 
         /* CPY */
-        case 0xc0: 
-        case 0xc4: 
-        case 0xcc: 
+        // case 0xc0: 
+        // case 0xc4: 
+        // case 0xcc: 
+        case CPY: 
             compare(op.addrmode, cpu.y);
             break; 
 
         /* CPX */
-        case 0xe0: 
-        case 0xe4: 
-        case 0xec: 
+        // case 0xe0: 
+        // case 0xe4: 
+        // case 0xec: 
+        case CPX: 
             compare(op.addrmode, cpu.x); 
             break; 
 
         /* JMP Absolute */
-        case 0x4c: {
+        // case 0x4c: 
+        case JMP_ABS: 
+        {
             uint16_t mem_address = cpu_mem_read16(cpu.pc);
             cpu.pc = mem_address;
             break; 
         }
 
         /* JMP Indirect */
-        case 0x6c: {
+        // case 0x6c: 
+        case JMP: 
+        {
             uint16_t mem_address = cpu_mem_read16(cpu.pc);
-            // let indirect_ref = self.mem_read_u16(mem_address);
             // 6502 bug mode with with page boundary:
             // if address $3000 contains $40, $30FF contains $80, and $3100 contains $50,
             // the result of JMP ($30FF) will be a transfer of control to $4080 rather than $5080 as you intended
@@ -711,7 +750,9 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* JSR */
-        case 0x20: {
+        // case 0x20: 
+        case JSR: 
+        {
             push_stack_uint16(cpu.pc + 2 - 1);
             uint16_t target_address = cpu_mem_read16(cpu.pc);
             cpu.pc = target_address; 
@@ -720,12 +761,15 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* RTS */
-        case 0x60: 
+        // case 0x60: 
+        case RTS: 
             cpu.pc = pop_stack_uint16() + 1;
             break;  
 
         /* RTI */
-        case 0x40: {
+        // case 0x40: 
+        case RTI: 
+        {
             cpu.p = pop_stack(); 
             cpu.p &= ~((uint8_t)flag_break); 
             cpu.p |= (uint8_t)flag_break2; 
@@ -734,7 +778,9 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* BNE */
-        case 0xd0: {
+        // case 0xd0: 
+        case BNE: 
+        {
             branch(
                 !(cpu.p & (uint8_t)flag_zero)
             );
@@ -742,127 +788,153 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* BVS */
-        case 0x70: {
+        // case 0x70: 
+        case BVS: 
+        {
             branch((cpu.p & (uint8_t)flag_overflow) != 0);
             break; 
         }
 
         /* BVC */
-        case 0x50: {
+        // case 0x50: 
+        case BVC: 
+        {
             branch(!(cpu.p & (uint8_t)flag_overflow));
             break; 
         }
 
         /* BPL */
-        case 0x10: {
+        // case 0x10: 
+        case BPL: 
+        {
             branch(!(cpu.p & (uint8_t)flag_negative));
             break; 
         }
 
         /* BMI */
-        case 0x30: {
+        // case 0x30: 
+        case BMI: 
+        {
             branch((cpu.p & (uint8_t)flag_negative) != 0);
             break; 
         }
 
         /* BEQ */
-        case 0xf0: {
+        // case 0xf0: 
+        case BEQ: 
+        {
             branch((cpu.p & (uint8_t)flag_zero) != 0);
             break; 
         }
 
         /* BCS */
-        case 0xb0: {
+        // case 0xb0: 
+        case BCS: 
+        {
             branch((cpu.p & (uint8_t)flag_carry) != 0);
             break; 
         }
 
         /* BCC */
-        case 0x90: {
+        // case 0x90: 
+        case BCC: 
+        {
             branch(!(cpu.p & (uint8_t)flag_carry));
             break; 
         }
 
         /* BIT */
-        case 0x24: 
-        case 0x2c: 
+        // case 0x24: 
+        // case 0x2c: 
+        case BIT: 
             bit(op.addrmode);
             break; 
         
 
         /* STA */
-        case 0x85: 
-        case 0x95: 
-        case 0x8d: 
-        case 0x9d: 
-        case 0x99: 
-        case 0x81: 
-        case 0x91: 
+        // case 0x85: 
+        // case 0x95: 
+        // case 0x8d: 
+        // case 0x9d: 
+        // case 0x99: 
+        // case 0x81: 
+        // case 0x91: 
+        case STA: 
             sta(op.addrmode);
             break; 
 
         /* STX */
-        case 0x86: 
-        case 0x96: 
-        case 0x8e: 
+        // case 0x86: 
+        // case 0x96: 
+        // case 0x8e: 
+        case STX: 
             cpu_mem_write(get_address(op.addrmode), cpu.x);
             break; 
 
         /* STY */
-        case 0x84: 
-        case 0x94: 
-        case 0x8c: 
+        // case 0x84: 
+        // case 0x94: 
+        // case 0x8c: 
+        case STY: 
             cpu_mem_write(get_address(op.addrmode), cpu.y);
             break; 
 
         /* LDX */
-        case 0xa2: 
-        case 0xa6: 
-        case 0xb6: 
-        case 0xae: 
-        case 0xbe: 
+        // case 0xa2: 
+        // case 0xa6: 
+        // case 0xb6: 
+        // case 0xae: 
+        // case 0xbe: 
+        case LDX: 
             ldx(op.addrmode);
             break; 
         
 
         /* LDY */
-        case 0xa0: 
-        case 0xa4: 
-        case 0xb4: 
-        case 0xac: 
-        case 0xbc: 
+        // case 0xa0: 
+        // case 0xa4: 
+        // case 0xb4: 
+        // case 0xac: 
+        // case 0xbc: 
+        case LDY: 
             ldy(op.addrmode);
             break;
 
         /* NOP */
-        case 0xea: 
+        // case 0xea: 
+        case NOP: 
             break; 
 
         /* TAY */
-        case 0xa8: 
+        // case 0xa8: 
+        case TAY: 
             cpu.y = cpu.a; 
             update_flags_zn(cpu.y);
             break; 
 
         /* TSX */
-        case 0xba: 
+        // case 0xba: 
+        case TSX: 
             cpu.x = cpu.sp;
             update_flags_zn(cpu.x);
             break; 
 
         /* TXA */
-        case 0x8a: 
+        // case 0x8a: 
+        case TXA: 
             cpu.a = cpu.x; 
             update_flags_zn(cpu.a);
             break; 
 
         /* TXS */
-        case 0x9a: 
+        // case 0x9a: 
+        case TXS: 
             cpu.sp = cpu.x;
             break; 
 
         /* TYA */
-        case 0x98: 
+        // case 0x98: 
+        case TYA: 
             cpu.a = cpu.y;
             update_flags_zn(cpu.a);
             break; 
@@ -873,13 +945,14 @@ void cpu_run_with_callback(void(*func)(void)) {
         /// Source: https://github.com/bugzmanov/nes_ebook/blob/master/code/ch5.1/src/cpu.rs
 
         /* DCP */
-        case 0xc7: 
-        case 0xd7: 
-        case 0xcf: 
-        case 0xdf: 
-        case 0xdb: 
-        case 0xd3: 
-        case 0xc3: 
+        // case 0xc7: 
+        // case 0xd7: 
+        // case 0xcf: 
+        // case 0xdf: 
+        // case 0xdb: 
+        // case 0xd3: 
+        // case 0xc3: 
+        case _DCP: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -893,41 +966,44 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* RLA */
-        case 0x27: 
-        case 0x37: 
-        case 0x2F: 
-        case 0x3F: 
-        case 0x3b: 
-        case 0x33: 
-        case 0x23: 
+        // case 0x27: 
+        // case 0x37: 
+        // case 0x2F: 
+        // case 0x3F: 
+        // case 0x3b: 
+        // case 0x33: 
+        // case 0x23: 
+        case _RLA: 
         {
             uint8_t data = rol(op.addrmode); 
             set_A(data & cpu.a); 
             break; 
         }
 
-        /* SLO */ //todo tests
-        case 0x07: 
-        case 0x17: 
-        case 0x0F: 
-        case 0x1f: 
-        case 0x1b: 
-        case 0x03: 
-        case 0x13: 
+        /* SLO */ // tests? 
+        // case 0x07: 
+        // case 0x17: 
+        // case 0x0F: 
+        // case 0x1f: 
+        // case 0x1b: 
+        // case 0x03: 
+        // case 0x13: 
+        case _SLO: 
         {
             uint8_t data = asl(op.addrmode); 
             set_A(data | cpu.a); 
             break; 
         }
 
-        /* SRE */ //todo tests
-        case 0x47: 
-        case 0x57: 
-        case 0x4F: 
-        case 0x5f: 
-        case 0x5b: 
-        case 0x43: 
-        case 0x53: 
+        /* SRE */ // tests? 
+        // case 0x47: 
+        // case 0x57: 
+        // case 0x4F: 
+        // case 0x5f: 
+        // case 0x5b: 
+        // case 0x43: 
+        // case 0x53: 
+        case _SRE: 
         {
             uint8_t data = lsr(op.addrmode); 
             set_A(data ^ cpu.a); 
@@ -935,19 +1011,21 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SKB */
-        case 0x80: 
-        case 0x82: 
-        case 0x89: 
-        case 0xc2: 
-        case 0xe2:  
+        // case 0x80: 
+        // case 0x82: 
+        // case 0x89: 
+        // case 0xc2: 
+        // case 0xe2:  
+        case _SKB: 
         {
-            /* 2 byte NOP (immidiate ) */
-            // todo: might be worth doing the read
+            /* 2 byte NOP */
+            // ? 
             break; 
         }
 
         /* AXS */
-        case 0xCB:  
+        // case 0xCB:  
+        case _AXS: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -962,7 +1040,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ARR */
-        case 0x6B:  
+        // case 0x6B:  
+        case _ARR: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -981,13 +1060,15 @@ void cpu_run_with_callback(void(*func)(void)) {
             } else {
                 cpu.p &= ~((uint8_t)flag_overflow); 
             }
-            //todo: registers
+            // registers? 
             update_flags_zn(result); 
             break; 
         }
 
         /* unofficial SBC */
-        case 0xeb: {
+        // case 0xeb: 
+        case _SBC: 
+        {
             uint16_t addr = get_address(op.addrmode); 
             int8_t data = cpu_mem_read(addr); 
             add_to_A((uint8_t)(-data - INT8_C(1))); 
@@ -995,8 +1076,9 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ANC */
-        case 0x0b: 
-        case 0x2b: 
+        // case 0x0b: 
+        // case 0x2b: 
+        case _ANC: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1010,7 +1092,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ALR */
-        case 0x4b: 
+        // case 0x4b: 
+        case _ALR: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1019,25 +1102,26 @@ void cpu_run_with_callback(void(*func)(void)) {
             break; 
         }
 
-        //todo: test for everything bellow
+        // test for everything below
 
         /* NOP read */
-        case 0x04: 
-        case 0x44: 
-        case 0x64: 
-        case 0x14: 
-        case 0x34: 
-        case 0x54: 
-        case 0x74: 
-        case 0xd4: 
-        case 0xf4: 
-        case 0x0c: 
-        case 0x1c: 
-        case 0x3c: 
-        case 0x5c: 
-        case 0x7c: 
-        case 0xdc: 
-        case 0xfc: 
+        // case 0x04: 
+        // case 0x44: 
+        // case 0x64: 
+        // case 0x14: 
+        // case 0x34: 
+        // case 0x54: 
+        // case 0x74: 
+        // case 0xd4: 
+        // case 0xf4: 
+        // case 0x0c: 
+        // case 0x1c: 
+        // case 0x3c: 
+        // case 0x5c: 
+        // case 0x7c: 
+        // case 0xdc: 
+        // case 0xfc: 
+        case _NOP_R: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1048,13 +1132,14 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* RRA */
-        case 0x67: 
-        case 0x77: 
-        case 0x6f: 
-        case 0x7f: 
-        case 0x7b: 
-        case 0x63: 
-        case 0x73: 
+        // case 0x67: 
+        // case 0x77: 
+        // case 0x6f: 
+        // case 0x7f: 
+        // case 0x7b: 
+        // case 0x63: 
+        // case 0x73: 
+        case _RRA: 
         {
             uint8_t data = ror(op.addrmode); 
             add_to_A(data); 
@@ -1062,13 +1147,14 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* ISB */
-        case 0xe7: 
-        case 0xf7: 
-        case 0xef: 
-        case 0xff: 
-        case 0xfb: 
-        case 0xe3: 
-        case 0xf3: 
+        // case 0xe7: 
+        // case 0xf7: 
+        // case 0xef: 
+        // case 0xff: 
+        // case 0xfb: 
+        // case 0xe3: 
+        // case 0xf3: 
+        case _ISB: 
         {
             int8_t data = (int8_t)inc(op.addrmode); 
             add_to_A((uint8_t)(-data - INT8_C(1))); 
@@ -1076,35 +1162,37 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* NOPs */
-        case 0x02: 
-        case 0x12: 
-        case 0x22: 
-        case 0x32: 
-        case 0x42: 
-        case 0x52: 
-        case 0x62: 
-        case 0x72: 
-        case 0x92: 
-        case 0xb2: 
-        case 0xd2: 
-        case 0xf2: 
-            break; 
+        // case 0x02: 
+        // case 0x12: 
+        // case 0x22: 
+        // case 0x32: 
+        // case 0x42: 
+        // case 0x52: 
+        // case 0x62: 
+        // case 0x72: 
+        // case 0x92: 
+        // case 0xb2: 
+        // case 0xd2: 
+        // case 0xf2: 
+            // break; 
 
-        case 0x1a: 
-        case 0x3a: 
-        case 0x5a: 
-        case 0x7a: 
-        case 0xda: 
-        case 0xfa: 
+        // case 0x1a: 
+        // case 0x3a: 
+        // case 0x5a: 
+        // case 0x7a: 
+        // case 0xda: 
+        // case 0xfa: 
+        case _NOP: 
             break; 
 
         /* LAX */
-        case 0xa7: 
-        case 0xb7: 
-        case 0xaf: 
-        case 0xbf: 
-        case 0xa3: 
-        case 0xb3: 
+        // case 0xa7: 
+        // case 0xb7: 
+        // case 0xaf: 
+        // case 0xbf: 
+        // case 0xa3: 
+        // case 0xb3: 
+        case _LAX: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1114,10 +1202,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SAX */
-        case 0x87: 
-        case 0x97: 
-        case 0x8f: 
-        case 0x83: 
+        // case 0x87: 
+        // case 0x97: 
+        // case 0x8f: 
+        // case 0x83: 
+        case _SAX: 
         {
             uint8_t data = cpu.a & cpu.x; 
             uint16_t addr = get_address(op.addrmode); 
@@ -1126,7 +1215,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* LXA */
-        case 0xab: 
+        // case 0xab: 
+        case _LXA: 
         {
             lda(op.addrmode); 
             tax(); 
@@ -1134,7 +1224,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* XAA */
-        case 0x8b: 
+        // case 0x8b: 
+        case _XAA: 
         {
             cpu.a = cpu.x; 
             update_flags_zn(cpu.a); 
@@ -1145,7 +1236,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* LAS */
-        case 0xbb: 
+        // case 0xbb: 
+        case _LAS: 
         {
             uint16_t addr = get_address(op.addrmode); 
             uint8_t data = cpu_mem_read(addr); 
@@ -1158,7 +1250,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* TAS */
-        case 0x9b: 
+        // case 0x9b: 
+        case _TAS: 
         {
             uint8_t data = cpu.a & cpu.x; 
             cpu.sp = data; 
@@ -1170,7 +1263,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* AHX  Indirect Y */
-        case 0x93: 
+        // case 0x93: 
+        case _AHX_IND_Y: 
         {
             uint8_t pos = cpu_mem_read(cpu.pc); 
             uint16_t mem_address = cpu_mem_read16(pos) + (uint16_t)cpu.y; 
@@ -1180,7 +1274,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* AHX Absolute Y*/
-        case 0x9f: 
+        // case 0x9f: 
+        case _AHX_ABS_Y: 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
             uint8_t data = cpu.a & cpu.x & (uint8_t)(mem_address >> 8); 
@@ -1189,11 +1284,12 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SHX */
-        case 0x9e: 
+        // case 0x9e: 
+        case _SHX: 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.y; 
-            // todo if cross page boundry {
-            //     mem_address &= (self.x as u16) << 8;
+            // if cross page boundry {
+            //     mem_address &= ((uint16_t)cpu.x) << 8;
             // }
             uint8_t data = cpu.x & ((uint8_t)(mem_address >> 8) + 1); 
             cpu_mem_write(mem_address, data); 
@@ -1201,7 +1297,8 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
 
         /* SHY */
-        case 0x9c: 
+        // case 0x9c: 
+        case _SHY: 
         {
             uint16_t mem_address = cpu_mem_read16(cpu.pc) + (uint16_t)cpu.x; 
             uint8_t data = cpu.y & ((uint8_t)(mem_address >> 8) + 1); 

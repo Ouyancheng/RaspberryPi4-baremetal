@@ -355,15 +355,15 @@ void test_cpu_rom(void) {
     // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/smb1.nes", "rb"); 
-    FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
+    // FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
+    FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
     // FILE *romfile = fopen("../testroms/tetrisa.nes", "rb"); 
     // FILE *romfile = fopen("../testroms/Alter_Ego.nes", "rb"); 
     if (!romfile) {
         panic("romfile not found!\n"); 
     }
     size_t romsize; 
-    fseek(romfile , 0L , SEEK_END);
+    fseek(romfile, 0L, SEEK_END);
     romsize = ftell(romfile);
     rewind(romfile); 
     if (fread((uint8_t*)rom_bytes, romsize, 1, romfile) != 1) {
@@ -401,7 +401,7 @@ void test_cpu_rom(void) {
     // cpu_run_with_callback(dump_cpu); 
 }
 int main(void) {
-    test_cpu_rom(); 
+    test_cpu_rom();
     printf("Done!!!\n"); 
     return 0; 
 }

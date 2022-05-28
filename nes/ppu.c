@@ -87,7 +87,7 @@ uint8_t ppu_read_data(void) {
         result = ppu.buffer; 
         ppu.buffer = ppu.vram[ppu_mirror_vram_addr(addr)]; 
     } else if (0x3000 <= addr && addr < 0x3f00) {
-        panic("unknown ppu address %04x\n", addr); 
+        panic("reading unknown ppu address %04x\n", addr); 
     } else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c) {
         result = ppu.palette_table[((addr-0x10) - 0x3f00)]; 
     } else {
@@ -103,7 +103,8 @@ void ppu_write_data(uint8_t data) {
     } else if (0x2000 <= addr && addr < 0x3000) {
         ppu.vram[ppu_mirror_vram_addr(addr)] = data; 
     } else if (0x3000 <= addr && addr < 0x3f00) {
-        panic("unknown ppu address %04x\n", addr); 
+        // printf("writing to unknown ppu address %04x\n", addr); 
+        panic("writing to unknown ppu address %04x\n", addr); 
     } else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c) {
         ppu.palette_table[((addr-0x10) - 0x3f00)] = data; 
     } else {

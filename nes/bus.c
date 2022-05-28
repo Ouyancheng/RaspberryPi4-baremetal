@@ -38,7 +38,7 @@ uint8_t bus_read(uint16_t addr) {
     }
     else if (0x4000 <= addr && addr <= 0x4015) {
         /// TODO: APU 
-        return 0; 
+        return 0xff; 
     }
     else if (addr == 0x4016) {
         /// NOTE: 0x4016 controller 1 
@@ -130,7 +130,7 @@ void bus_write(uint16_t addr, uint8_t value) {
         // APU address 
     }
     else if (0x8000 <= addr) {
-        panic("Error: trying to write to PRG ROM space!\n"); 
+        panic("Error: trying to write to PRG ROM space! addr=%04x\n", addr); 
     }
     else {
         // printf("writing to address %04x is ignored\n", addr); 
