@@ -82,8 +82,21 @@ void controller_handle_input(unsigned timeout) {
     // if (!hasdata) {
     //     return; 
     // }
+    char c = '\0';
+    asm volatile("nop":::"memory"); 
+    dev_barrier(); 
+    // while (uart_has_data(UART0_BASE)) {
+    //     asm volatile("nop":::"memory"); 
+    //     dev_barrier(); 
+    //     c = uart_getc(UART0_BASE); 
+    // }
+    asm volatile("nop":::"memory"); 
+    dev_barrier(); 
     while (uart_has_data(UART0_BASE)) {
-        char c = uart_getc(UART0_BASE); 
+        // printf("%c", c); 
+        asm volatile("nop":::"memory"); 
+        dev_barrier(); 
+        c = uart_getc(UART0_BASE); 
         bool set_key = true; 
         switch (c) {
             case 'w': 
@@ -126,6 +139,9 @@ void controller_handle_input(unsigned timeout) {
                 break; 
         }
     }
+    asm volatile("nop":::"memory"); 
+    dev_barrier(); 
+    
 }
 #endif 
 

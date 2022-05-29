@@ -9,6 +9,7 @@ void controller_init(struct nes_controller *ctl) {
 void controller_write(struct nes_controller *ctl, uint8_t data) {
     ctl->strobe = (data & 1);
     if (ctl->strobe & 1) {
+        // ctl->shift_register = 0; 
         ctl->latched_index = 0; 
     }
 }
@@ -23,6 +24,9 @@ uint8_t controller_read(struct nes_controller *ctl) {
         return 1; 
     }
     uint8_t bit = ((ctl->shift_register >> ctl->latched_index) & 1); 
+    #if PLATFORM_RPI
+    ctl->shift_register &= ~(UINT8_C(1) << ctl->latched_index); 
+    #endif 
     ctl->latched_index += 1; 
     return bit; 
 }

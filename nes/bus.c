@@ -44,7 +44,7 @@ uint8_t bus_read(uint16_t addr) {
     else if (addr == 0x4016) {
         /// NOTE: 0x4016 controller 1 
         uint8_t ret = controller_read(&controller1); 
-        // printf("polling controller 1 = %02x\n", ret); 
+        // printf("polling controller 1 = %02x\r\n", ret); 
         return ret; 
     } 
     else if (addr == 0x4017) {
