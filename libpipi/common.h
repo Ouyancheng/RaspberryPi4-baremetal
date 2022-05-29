@@ -21,9 +21,11 @@ static inline uint32_t get32(uintptr_t addr) {
 }
 #endif 
 #ifdef BCM2835
-#define MMIO_BASE (0x20000000)
+#define MMIO_BASE (UINT32_C(0x20000000))
+#define BUS_MMIO_BASE (UINT32_C(0x7E000000))
 #else 
-#define MMIO_BASE (0xFE000000)
+#define MMIO_BASE ((uintptr_t)(0xFE000000))
+#define BUS_MMIO_BASE ((uintptr_t)(0x7E000000))
 #endif 
 
 

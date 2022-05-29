@@ -18,6 +18,7 @@ add_library(${TARGET}
     crc.c 
     uartgetcode.c 
     framebuffer.c 
+    dma.c 
 )
 target_include_directories(${TARGET} PUBLIC "${libpipi_INCLUDE_DIRS}")
 set_target_properties(${TARGET}  PROPERTIES PREFIX "")
