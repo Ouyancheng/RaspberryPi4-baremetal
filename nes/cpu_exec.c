@@ -884,8 +884,14 @@ void cpu_run_with_callback(void(*func)(void)) {
         #else 
         case RTS: 
         #endif 
+        {
+            // if (cpu.sp == SP_RESET) {
+            //     return; // this means that we are calling RTS at the topmost level 
+            // }
             cpu.pc = pop_stack_uint16() + 1;
             break;  
+        }
+            
 
         /* RTI */
         #if SWITCH_ON_OPCODE
@@ -1573,3 +1579,11 @@ void cpu_run_with_callback(void(*func)(void)) {
         }
     }
 }
+
+
+
+
+
+
+
+

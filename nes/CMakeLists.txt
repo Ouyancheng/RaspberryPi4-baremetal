@@ -19,8 +19,10 @@ set(nes_code_files
     rom.c 
     cpu_debug.c 
     ppu.c 
+    ppu_render.c 
     display_interface.c 
     controller.c 
+    controller_interface.c 
 )
 if (NOT DEFINED UNIX)
     add_library(${TARGET} 

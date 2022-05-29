@@ -46,16 +46,17 @@ static inline void cpu_mem_write16(uint16_t addr, uint16_t value) {
     cpu_mem_write(addr, value & 0xFF); 
     cpu_mem_write(addr+1, value >> 8); 
 }
-void cpu_load_program_and_run(uint8_t *program, size_t length); 
+////// NOTE: The following two function are only for test purpose!!!!!! 
+void cpu_load_program(uint8_t *program, size_t length, unsigned at); 
+void cpu_load_program_and_run(uint8_t *program, size_t length, unsigned at); 
+////// NOTE: Run the CPU, notice that the rom should be load and the bus should be initialized 
 void cpu_run(void); 
 void cpu_run_with_callback(void(*func)(void)); 
+////// The reset interrupt 
 void cpu_reset(void); 
-void cpu_load_program(uint8_t *program, size_t length); 
+////// initialization 
 void cpu_init(void); 
 uint16_t cpu_get_address(enum addressmode mode, uint16_t addr); 
-
-
-
 enum cpu_interrupt {
     cpu_interrupt_nmi     = UINT16_C(0),
     cpu_interrupt_reset   = UINT16_C(1), 
@@ -63,7 +64,7 @@ enum cpu_interrupt {
 };
 #define INTERRUPT_VECTOR_BASE (UINT16_C(0xFFFA))
 struct cpu_interrupt_info {
-    enum cpu_interrupt type; // also contains the handler address 
+    enum cpu_interrupt type; // handler address = interrupt vector base + type * 2 
     uint8_t flag_mask; 
     unsigned cycles; 
 };

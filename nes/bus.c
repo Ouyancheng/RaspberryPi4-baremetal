@@ -1,8 +1,9 @@
 #include "bus.h"
 #include "ppu.h"
 #include "controller.h"
+#include "controller_interface.h"
+#include "display_interface.h"
 struct nes_bus bus; 
-
 
 void bus_init(struct nes_rom bus_rom, void(*nmi_callback)(void)) {
     memset((uint8_t*)bus.cpu_ram, 0, CPU_RAM_SIZE); 
@@ -28,7 +29,7 @@ uint8_t bus_read(uint16_t addr) {
                 // status 
                 return ppu_read_status(); 
             default: 
-                panic("reading invalid ppu register %04x\n", addr); 
+                // panic("reading invalid ppu register %04x\n", addr); 
                 break; 
         }
         return 0; 
@@ -113,12 +114,10 @@ void bus_write(uint16_t addr, uint8_t value) {
         /// NOTE: 
         /// there's weird timing issue, we  need to add back the cycles for DMA 
         unsigned compensation = ((bus.cycles % 2) ? 514 : 513); 
-        for (int i = 0; i < compensation; ++i) {
-            bus_catch_up_cpu_cycles(1); 
-        }
-        // if (cycles % 2) compensation = 514; else compensation = 513; 
-        /// bus_catch_up_cpu_cycles(compensation); 
-        /// PPU will have (513 or 514) * 3 cycles, which skips lines, we need to compensate this step by step 
+        // for (int i = 0; i < compensation; ++i) {
+        //     bus_catch_up_cpu_cycles(1); 
+        // }
+        ////// the timing is not quite correct 
     }
     else if (addr == 0x4016) {
         controller_write(&controller1, value); 
@@ -148,7 +147,15 @@ uint8_t read_prg_rom(uint16_t addr) {
 void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
     bus.cycles += cpu_cycles; 
     if (ppu_tick_cycles(cpu_cycles * 3)) {
-        bus.nmi_callback(); 
+        // bus.nmi_callback(); 
+        ppu_render_frame(); 
+        controller_handle_input(0); 
+        uint32_t tick = get_current_time_ms(); 
+        int latency = 0; 
+        if ((latency = (1000 / FRAMERATE) - (int)(tick - display.last_tick)) > 0) {
+            delay_ms(latency);
+        }
+        display.last_tick = get_current_time_ms();
     } 
 }
 bool bus_poll_nmi(void) {

@@ -20,39 +20,26 @@ void cpu_init(void) {
     cpu.delayed_cycles = 0; 
 }
 
-void cpu_load_program(uint8_t *program, size_t length) {
-#if 0 
-    memcpy(
-        ((uint8_t*)cpu_ram) + 0x8000, 
-        program,
-        length
-    ); 
-    cpu_mem_write16(UINT16_C(0xFFFC), UINT16_C(0x8000)); 
-#endif 
-    // memcpy(
-    //     ((uint8_t*)cpu_ram) + 0x0600, 
-    //     program,
-    //     length
-    // ); 
-    // cpu_mem_write16(UINT16_C(0xFFFC), UINT16_C(0x0600)); 
+void cpu_load_program(uint8_t *program, size_t length, unsigned at) {
     for (size_t i = 0; i < length; ++i) {
         cpu_mem_write(UINT16_C(0x0600) + (uint16_t)i, program[i]); 
     }
 }
+////// NOTE: this is the reset interrupt 
 void cpu_reset(void) {
     cpu.a = 0; 
     cpu.x = 0; 
     cpu.y = 0; 
-    cpu.sp = SP_RESET; 
-    cpu.p = UINT8_C(0b00100100); 
-    cpu.pc = cpu_mem_read16(UINT16_C(0xFFFC)); 
+    cpu.sp = SP_RESET; // this is 0xFD because we pretend that we have pushed something here... 
+    cpu.p = (uint8_t)flag_break2 | (uint8_t)flag_interrupt_disable; // UINT8_C(0b00100100); 
+    cpu.pc = cpu_mem_read16(INTERRUPT_VECTOR_BASE + (uint16_t)cpu_interrupt_reset * UINT16_C(2)); 
 }
 void cpu_run(void) {
     cpu_run_with_callback(do_nothing); 
 }
 
-void cpu_load_program_and_run(uint8_t *program, size_t length) {
-    cpu_load_program(program, length); 
+void cpu_load_program_and_run(uint8_t *program, size_t length, unsigned at) {
+    cpu_load_program(program, length, at); 
     cpu_reset(); 
     cpu_run(); 
 }

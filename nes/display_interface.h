@@ -1,7 +1,6 @@
 #pragma once 
 
 #include "sdk.h"
-#include "ppu.h"
 #ifndef PLATFORM_UNIX 
 #error "not yet supported" 
 #endif 

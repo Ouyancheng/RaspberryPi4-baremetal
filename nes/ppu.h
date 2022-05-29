@@ -2,7 +2,7 @@
 
 #include "sdk.h"
 #include "rom.h"
-
+#include "ppu_render.h"
 struct ppu_reg_addr {
     uint16_t value; 
     unsigned reading_lo; 
@@ -65,40 +65,55 @@ enum ppu_status_flags {
     ppu_status_sprite_zero_hit = 0b01000000,
     ppu_status_vblank_started  = 0b10000000 
 };
-
-
-struct rgb {
-    uint8_t a; 
-    
-    uint8_t r; 
-    uint8_t g; 
-    uint8_t b; 
-    
-    
-};
-
+/// initiates PPU 
 void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror); 
-void ppu_write_addr(uint8_t data); 
-void ppu_reset_addr_state(void); 
-uint8_t ppu_read_data(void); 
-void ppu_write_data(uint8_t data); 
-struct rgb ppu_mask_get_color_emphasis(void); 
-void ppu_write_scroll(uint8_t value); 
-void ppu_reset_scroll_state(void); 
-void ppu_write_ctrl(uint8_t value);
-void ppu_write_mask(uint8_t value);
-void ppu_write_oam_addr(uint8_t value);
-uint8_t ppu_read_oam_data(void);
-void ppu_write_oam_data(uint8_t value);
-uint8_t ppu_read_status(void); 
-void ppu_oam_dma(uint8_t *data, unsigned data_size); 
-bool ppu_tick_cycles(unsigned ppu_cycles); 
-void ppu_draw_tile(uint8_t *chr_rom, size_t chr_rom_size, unsigned bank, unsigned ntile, int tilex, int tiley); 
-void ppu_render_frame(void); 
-void ppu_get_palette_for_background_tile(uint8_t *palette_color_indices, unsigned tilex, unsigned tiley); 
-void ppu_get_palette_for_sprite_tile(uint8_t *palette_color_indices, unsigned palette_index); 
 
-extern struct rgb tile_palette[64]; 
+/// write to the address register of PPU 
+void ppu_write_addr(uint8_t data); 
+
+/// reset the address register latch 
+void ppu_reset_addr_state(void); 
+
+/// read the PPU data register, the address register will be incremented, also there's a dummy read delay slot 
+uint8_t ppu_read_data(void); 
+
+/// write to the data register, the address register will be incremented 
+void ppu_write_data(uint8_t data); 
+
+/// get the color emphasis 
+struct rgb ppu_mask_get_color_emphasis(void); 
+
+/// write to the scroll register 
+void ppu_write_scroll(uint8_t value); 
+
+/// reset the scroll register latch 
+void ppu_reset_scroll_state(void); 
+
+/// write to the control register 
+void ppu_write_ctrl(uint8_t value);
+
+/// write to the mask register 
+void ppu_write_mask(uint8_t value);
+
+/// write to the object attribute memory address register 
+void ppu_write_oam_addr(uint8_t value);
+
+/// read the object attribute memory data 
+uint8_t ppu_read_oam_data(void);
+
+/// write data to the object attribute memory pointed by the OAM address 
+void ppu_write_oam_data(uint8_t value);
+
+/// read the PPU status register 
+uint8_t ppu_read_status(void); 
+
+/// perform DMA on object attribute memory 
+void ppu_oam_dma(uint8_t *data, unsigned data_size); 
+
+
+
+
+
 
 
 
