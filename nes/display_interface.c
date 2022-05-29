@@ -1,8 +1,8 @@
 #include "display_interface.h"
 
+#ifdef PLATFORM_UNIX 
 struct display_device display; 
-
-
+uint32_t last_frame_tick; 
 void display_init(const char *const title, int width, int height, int scaling_w, int scaling_h) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         panic("error initializing SDL: %s\n", SDL_GetError());
@@ -77,7 +77,7 @@ void display_render_frame(void) {
     SDL_RenderPresent(display.renderer); 
     memset((uint8_t*)display.framebuffer, 0, sizeof(struct rgb) * NES_DISPLAY_WIDTH * NES_DISPLAY_HEIGHT); 
 }
-
+#endif 
 
 
 

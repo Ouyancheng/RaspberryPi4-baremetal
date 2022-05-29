@@ -1,8 +1,8 @@
 project(nes)
 cmake_minimum_required(VERSION 3.10)
 include_guard(GLOBAL)
-if (NOT DEFINED UNIX)
-    add_subdirectory(libpipi libpipi)
+if (DEFINED RPI)
+    add_subdirectory(../libpipi libpipi)
 else()
     find_package(SDL2 REQUIRED)
 endif()
@@ -24,13 +24,15 @@ set(nes_code_files
     controller.c 
     controller_interface.c 
 )
-if (NOT DEFINED UNIX)
+if (DEFINED RPI)
+    message(STATUS "RPI=${RPI}")
     add_library(${TARGET} 
         ${nes_code_files}
     )
     target_link_libraries(${TARGET} 
         libpipi
     )
+    add_compile_definitions(PLATFORM_RPI=1)
     set_target_properties(${TARGET}  PROPERTIES PREFIX "")
     set_target_properties(${TARGET}  PROPERTIES OUTPUT_NAME ${TARGET})
     set_target_properties(${TARGET}  PROPERTIES SUFFIX ".a")
@@ -39,15 +41,14 @@ else()
     add_executable(${TARGET} ${nes_code_files})
     target_link_libraries(${TARGET} ${SDL2_LIBRARIES})
 
-
     # set(CMAKE_C_FLAGS "-Ofast -flto -march=native")
-    # include(CheckIPOSupported)
-    # check_ipo_supported(RESULT result OUTPUT output)
-    # if(result)
-    #     set_property(TARGET ${TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-    # else()
-    #     message(WARNING "IPO is not supported: ${output}")
-    # endif()
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT result OUTPUT output)
+    if(result)
+        set_property(TARGET ${TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(WARNING "IPO is not supported: ${output}")
+    endif()
     add_custom_command(TARGET ${TARGET} POST_BUILD
         COMMAND ${CMAKE_OBJDUMP} -C -D "${TARGET}"  > "${TARGET}.list"
         COMMENT "Invoking: objdump")

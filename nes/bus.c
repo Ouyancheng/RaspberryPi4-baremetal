@@ -166,10 +166,10 @@ void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
         controller_handle_input(0); 
         uint32_t tick = get_current_time_ms(); 
         int latency = 0; 
-        if ((latency = (1000 / FRAMERATE) - (int)(tick - display.last_tick)) > 0) {
+        if ((latency = (1000 / FRAMERATE) - (int)(tick - last_frame_tick)) > 0) {
             delay_ms(latency);
         }
-        display.last_tick = get_current_time_ms();
+        last_frame_tick = get_current_time_ms();
     }
         
 }

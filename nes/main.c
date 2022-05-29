@@ -11,10 +11,10 @@ void nmi_callback_render_frame(void) {
     controller_handle_input(0); 
     uint32_t tick = get_current_time_ms(); 
     int latency = 0; 
-    if ((latency = (1000 / FRAMERATE) - (int)(tick - display.last_tick)) > 0) {
+    if ((latency = (1000 / FRAMERATE) - (int)(tick - last_frame_tick)) > 0) {
         delay_ms(latency);
     }
-    display.last_tick = get_current_time_ms();
+    last_frame_tick = get_current_time_ms();
 }
 void test_cpu_rom(const char *rom_path) {
     srand(0); 
@@ -23,25 +23,7 @@ void test_cpu_rom(const char *rom_path) {
         test_mode = true; 
         rom_path = "../testroms/nestest.nes"; 
     }
-    FILE *romfile = fopen(rom_path, "rb"); 
-    // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/nestest.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/smb1.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/DonkeyKong.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/Pac-Man (USA) (Namco).nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/tetrisa.nes", "rb"); 
-    // FILE *romfile = fopen("../testroms/Alter_Ego.nes", "rb"); 
-    if (!romfile) {
-        panic("romfile not found!\n"); 
-    }
-    size_t romsize; 
-    fseek(romfile, 0L, SEEK_END);
-    romsize = ftell(romfile);
-    rewind(romfile); 
-    if (fread((uint8_t*)rom_bytes, romsize, 1, romfile) != 1) {
-        panic("rom file read failed!\n"); 
-    }
-    fclose(romfile); 
+    unsigned romsize = load_file((uint8_t*)rom_bytes, 1048576, rom_path); 
     display_init("tile", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 3, 3); 
     struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
     controller_init(&controller1); 

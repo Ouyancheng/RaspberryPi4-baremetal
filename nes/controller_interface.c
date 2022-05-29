@@ -1,6 +1,9 @@
 #include "controller_interface.h"
 #include "controller.h"
 #include "display_interface.h"
+
+
+#ifdef PLATFORM_UNIX 
 #include <SDL2/SDL.h> 
 void controller_handle_input(unsigned timeout) {
     SDL_Event e;
@@ -69,7 +72,7 @@ void controller_handle_input(unsigned timeout) {
         }
     } while (timeout == 0); 
 }
-
+#endif 
 
 
 
