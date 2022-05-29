@@ -25,7 +25,7 @@ struct DMAInfo {
 };
 
 
-#define DMA_CH0_REGS ((uintptr_t)0x20007000)
+#define DMA_CH0_REGS ((uintptr_t)0x00007000 + MMIO_BASE)
 #define DMA_CH_REG_OFFSET 0x100 
 #define DMA_CS_IDX (0x0>>2)
 #define DMA_CBLK_ADDR_IDX (0x4>>2) 
