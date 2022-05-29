@@ -135,7 +135,9 @@ void ppu_write_data(uint8_t data) {
     uint16_t addr = ppu.addr.value; 
     ppu_vram_addr_increment(); 
     if (addr < 0x2000) {
-        panic("attempting to write to chr rom address %04x\n", addr); 
+        // printf("attempting to write to chr rom address %04x\n", addr); 
+        return; 
+        // ppu.chr_rom[addr] = data; 
     } 
     else if (0x2000 <= addr && addr < 0x3000) {
         ppu.vram[ppu_mirror_vram_addr(addr)] = data; 
