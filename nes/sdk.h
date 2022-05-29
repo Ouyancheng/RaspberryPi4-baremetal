@@ -85,5 +85,5 @@ void do_nothing(void);
 
 unsigned load_file(uint8_t *target, unsigned target_size, const char *filename); 
 
-#define FRAMERATE 60 
+#define FRAMERATE 90 
 
