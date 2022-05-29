@@ -3,7 +3,7 @@
 #include "display_interface.h"
 
 
-#ifdef PLATFORM_UNIX 
+#ifdef PLATFORM_PC 
 #include <SDL2/SDL.h> 
 void controller_handle_input(unsigned timeout) {
     SDL_Event e;

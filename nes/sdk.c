@@ -13,7 +13,7 @@ int panic_at(const char *file, int line, const char *function, const char *forma
     exit(1); 
     return n; 
 }
-#ifdef PLATFORM_UNIX 
+#ifdef PLATFORM_PC 
 unsigned load_file(uint8_t *target, unsigned target_size, const char *filename) {
     FILE *romfile = fopen(filename, "rb"); 
     // FILE *romfile = fopen("../testroms/snake.nes", "rb"); 

@@ -5,7 +5,7 @@
 
 #define NES_DISPLAY_WIDTH 256 
 #define NES_DISPLAY_HEIGHT 240 
-#ifdef PLATFORM_UNIX 
+#ifdef PLATFORM_PC 
 #include "SDL2/SDL.h"
 struct display_device {
     SDL_Window   *window;

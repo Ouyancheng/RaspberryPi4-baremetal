@@ -3,7 +3,7 @@
 uint32_t last_frame_tick; 
 
 
-#ifdef PLATFORM_UNIX 
+#ifdef PLATFORM_PC 
 struct display_device display; 
 void display_init(const char *const title, int width, int height, int scaling_w, int scaling_h) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {

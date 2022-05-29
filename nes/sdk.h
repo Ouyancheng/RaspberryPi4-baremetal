@@ -1,8 +1,13 @@
 #pragma once 
-#if defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__)
+#if defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__) || defined(__linux__)
 #   define PLATFORM_UNIX 1 
 #endif
-
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__) 
+#   define PLATFORM_WINDOWS 1
+#endif 
+#if defined(PLATFORM_UNIX) || defined(PLATFORM_WINDOWS)
+#   define PLATFORM_PC 1
+#endif 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -27,22 +32,25 @@ static inline unsigned get_current_time_ms(void) {
 }
 #endif 
 
-#ifdef PLATFORM_UNIX  
+#ifdef PLATFORM_PC  
 #   include <string.h>
 #   include <stdio.h>
-#   include <unistd.h>
+// #   include <unistd.h>
 #   include <stdlib.h>
 #   include <signal.h>
 #   include <SDL2/SDL.h>
-static inline void delay_us(unsigned us) {
-    usleep(us); 
-}
+// static inline void delay_us(unsigned us) {
+//     usleep(us); 
+// }
 static inline void delay_ms(unsigned ms) {
     // delay_us(ms * 1000); 
     SDL_Delay(ms); 
 }
 static inline void delay_sec(unsigned sec) {
-    sleep(sec); 
+    // sleep(sec); 
+    for (unsigned i = 0; i < sec; ++i) {
+        delay_ms(1000); 
+    }
 }
 static inline unsigned get_current_time_ms(void) {
     return SDL_GetTicks(); 

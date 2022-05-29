@@ -15,7 +15,7 @@ void nmi_callback_render_frame(void) {
     }
     last_frame_tick = get_current_time_ms();
 }
-#ifdef PLATFORM_UNIX 
+#ifdef PLATFORM_PC 
 void test_cpu_rom(const char *rom_path) {
     bool test_mode = false; 
     if (!rom_path) {
