@@ -2,10 +2,10 @@
 #include "cpu.h"
 #include "cpu_debug.h"
 #include "ppu.h"
+#include "controller.h"
 #include "display_interface.h"
 #include "controller_interface.h" 
 #ifdef PLATFORM_UNIX 
-
 void nmi_callback_render_frame(void) {
     ppu_render_frame(); 
     controller_handle_input(0); 
@@ -44,6 +44,8 @@ void test_cpu_rom(const char *rom_path) {
     fclose(romfile); 
     display_init("tile", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 3, 3); 
     struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
+    controller_init(&controller1); 
+    controller_init(&controller2); 
     bus_init(rom, NULL); 
     /// 
     // printf("romsize = %zu, prgsize = %zu, chrsize = %zu\n", romsize, rom.prg_rom_size, rom.chr_rom_size); 
@@ -74,8 +76,8 @@ void test_cpu_rom(const char *rom_path) {
     }
     cpu_init(); 
     cpu_reset(); 
-    // cpu_run(); 
-    cpu_run_with_callback(dump_cpu);
+    cpu_run(); 
+    // cpu_run_with_callback(dump_cpu);
     display_exit(); 
     printf("Done!!!\n"); 
     return; 

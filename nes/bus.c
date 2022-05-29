@@ -43,11 +43,20 @@ uint8_t bus_read(uint16_t addr) {
     }
     else if (addr == 0x4016) {
         /// NOTE: 0x4016 controller 1 
-        return controller_read(&controller1); 
+        uint8_t ret = controller_read(&controller1); 
+        // printf("polling controller 1 = %02x\n", ret); 
+        return ret; 
     } 
     else if (addr == 0x4017) {
+        /**
+         * For some reason, controller 2 is always reading 0x01, which makes games that read both controllers fail to respond to input 
+         * figuring out why...... 
+         */
         /// NOTE: 0x4017 controller 2 
-        return controller_read(&controller2); 
+        // uint8_t ret = controller_read(&controller2); 
+        // printf("polling controller 2 = %02x\n", ret); 
+        // return ret; 
+        return 0; 
     }
     else if (0x8000 <= addr) {
         return read_prg_rom(addr); 
@@ -87,6 +96,7 @@ void bus_write(uint16_t addr, uint8_t value) {
                 break; 
             case 0x2005: 
                 // scroll 
+                // printf("write to scroll with %02x\n", value); 
                 ppu_write_scroll(value); 
                 break; 
             case 0x2006: 
@@ -146,7 +156,11 @@ uint8_t read_prg_rom(uint16_t addr) {
 
 void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
     bus.cycles += cpu_cycles; 
-    if (ppu_tick_cycles(cpu_cycles * 3)) {
+
+    unsigned prev_nmi = ppu.nmi_raised; 
+    ppu_tick_cycles(cpu_cycles * 3); 
+    unsigned current_nmi = ppu.nmi_raised; 
+    if (!prev_nmi && current_nmi) {
         // bus.nmi_callback(); 
         ppu_render_frame(); 
         controller_handle_input(0); 
@@ -156,7 +170,8 @@ void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
             delay_ms(latency);
         }
         display.last_tick = get_current_time_ms();
-    } 
+    }
+        
 }
 bool bus_poll_nmi(void) {
     if (ppu.nmi_raised) {

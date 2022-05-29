@@ -20,7 +20,7 @@ void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror) {
     ppu.status = 0; 
     ppu.oam_addr = 0; 
     ppu.buffer = 0; 
-    ppu.cycles = 0; 
+    ppu.scanline_cycles = 0; 
     ppu.scanline = 0; 
     ppu.nmi_raised = 0; 
 }

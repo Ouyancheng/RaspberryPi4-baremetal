@@ -26,27 +26,35 @@ void controller_handle_input(unsigned timeout) {
             switch (keycode) {
             case SDLK_w: 
                 controller_latch_button(&controller1, controller_button_up, set_key); 
+                // controller_latch_button(&controller2, controller_button_up, set_key); 
                 break; 
             case SDLK_a: 
                 controller_latch_button(&controller1, controller_button_left, set_key); 
+                // controller_latch_button(&controller2, controller_button_left, set_key); 
                 break; 
             case SDLK_s: 
                 controller_latch_button(&controller1, controller_button_down, set_key); 
+                // controller_latch_button(&controller2, controller_button_down, set_key); 
                 break; 
             case SDLK_d: 
                 controller_latch_button(&controller1, controller_button_right, set_key); 
+                // controller_latch_button(&controller2, controller_button_right, set_key); 
                 break; 
             case SDLK_j:
                 controller_latch_button(&controller1, controller_button_button_b, set_key);  
+                // controller_latch_button(&controller2, controller_button_button_b, set_key);  
                 break; 
             case SDLK_k: 
                 controller_latch_button(&controller1, controller_button_button_a, set_key);  
+                // controller_latch_button(&controller2, controller_button_button_a, set_key);  
                 break; 
             case SDLK_SPACE: 
                 controller_latch_button(&controller1, controller_button_start, set_key);  
+                // controller_latch_button(&controller2, controller_button_start, set_key);  
                 break; 
             case SDLK_TAB: 
                 controller_latch_button(&controller1, controller_button_select, set_key);  
+                // controller_latch_button(&controller2, controller_button_select, set_key);  
                 break; 
             case SDLK_ESCAPE: 
             case SDLK_q: 

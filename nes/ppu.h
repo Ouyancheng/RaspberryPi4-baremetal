@@ -26,7 +26,7 @@ struct ppu_device {
     uint8_t status; 
     uint8_t oam_addr; 
     uint8_t buffer; 
-    unsigned cycles; 
+    unsigned scanline_cycles; 
     unsigned scanline; 
     unsigned nmi_raised; 
 };
