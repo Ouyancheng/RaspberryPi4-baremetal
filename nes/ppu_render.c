@@ -103,6 +103,10 @@ void ppu_draw_sprite_tile(struct ppu_device *ppu, unsigned sprite_bank, unsigned
     unsigned sprite_tile_y = (unsigned)ppu->oam_data[i]; 
     bool flip_vertical = (((ppu->oam_data[i+2] >> 7) & 1)); 
     bool flip_horizontal = (((ppu->oam_data[i+2] >> 6) & 1)); 
+    bool behind_background = (((ppu->oam_data[i+2] >> 5) & 1)); 
+    if (behind_background) { 
+        return; 
+    }
     unsigned palette_index = ppu->oam_data[i+2] & 0b11; 
     uint8_t sprite_palette_colors[4]; 
     ppu_get_palette_for_sprite_tile((uint8_t*)sprite_palette_colors, palette_index); 
@@ -208,7 +212,8 @@ void ppu_render_frame(void) {
 #if RENDER_SPRITE
     unsigned sprite_bank = ((ppu.ctrl & ppu_ctrl_sprite_pattern_addr) != 0); 
     // draw sprite 
-    for (int i = 63; i >= 0; i -= 1) {
+    for (int i = 0; i < 64; ++i) {
+    // for (int i = 63; i >= 0; i -= 1) {
         ppu_draw_sprite_tile(&ppu, sprite_bank, i); 
     }
 #endif 
