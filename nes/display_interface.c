@@ -77,7 +77,7 @@ void display_render_frame(void) {
         panic("failed to copy texture\n"); 
     }
     SDL_RenderPresent(display.renderer); 
-    memset((uint8_t*)display.framebuffer, 0, sizeof(struct rgb) * NES_DISPLAY_WIDTH * NES_DISPLAY_HEIGHT); 
+    // memset((uint8_t*)display.framebuffer, 0, sizeof(struct rgb) * NES_DISPLAY_WIDTH * NES_DISPLAY_HEIGHT); 
 }
 #endif 
 
@@ -113,7 +113,14 @@ void display_render_frame(void) {
 #endif 
 
 
-
+void display_delay_for_framerate(void) {
+    uint32_t tick = get_current_time_ms(); 
+    int latency = 0; 
+    if ((latency = (1000 / FRAMERATE) - (int)(tick - last_frame_tick)) > 0) {
+        delay_ms(latency);
+    }
+    last_frame_tick = get_current_time_ms();
+}
 
 
 

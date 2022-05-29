@@ -27,7 +27,7 @@ void display_init(const char *const title, int width, int height, int scaling_w,
 void display_exit(void); 
 void display_set_pixel(unsigned x, unsigned y, struct rgb color); 
 void display_render_frame(void); 
-
+void display_delay_for_framerate(void); 
 extern uint32_t last_frame_tick; 
 
 
