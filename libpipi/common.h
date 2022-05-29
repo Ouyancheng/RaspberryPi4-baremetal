@@ -20,4 +20,10 @@ static inline uint32_t get32(uintptr_t addr) {
 #ifdef __cplusplus
 }
 #endif 
+#ifdef BCM2835
+#define MMIO_BASE (0x20000000)
+#else 
 #define MMIO_BASE (0xFE000000)
+#endif 
+
+

@@ -76,15 +76,8 @@ int main(int argc, const char *argv[]) {
 
 
 #ifdef PLATFORM_RPI 
-int main(void) {
-    uart_init(UART0_BASE, UART0_TX, UART0_RX, UART0_PIN_FUNC, UART0_PIN_FUNC, 115200); 
-    dev_barrier(); 
+int nes_run(void) {
     printf("hello!!! please close this session and upload a rom file in another session~\n"); 
-    // for (int i = 10; i < width; i += 1) {
-    //     for (int j = 10; j < height; j += 1) {
-    //         draw_pixel_rgba((unsigned char*)fb, i, j, (i+j)&0xff, (i*j)&0xff, (i+j*i)&0xff, 0xff); 
-    //     }
-    // }
     unsigned romsize = load_file((uint8_t*)rom_bytes, 1048576, NULL); 
     if (!romsize) {
         panic("failed to get rom!\n"); 

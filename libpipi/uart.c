@@ -25,8 +25,8 @@ void uart_init(uintptr_t uart_base_addr, unsigned txpin, unsigned rxpin, gpio_fu
     gpio_set_function(rxpin, rxpinfunc); 
     dev_barrier(); 
     delay_ms(1); 
-    gpio_set_pull(txpin, GPIO_PULL_NONE); 
-    gpio_set_pull(rxpin, GPIO_PULL_NONE); 
+    // gpio_set_pull(txpin, GPIO_PULL_NONE); 
+    // gpio_set_pull(rxpin, GPIO_PULL_NONE); 
     dev_barrier(); 
     delay_ms(1);
     // *ICR = 0x7FF; 

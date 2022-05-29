@@ -51,11 +51,11 @@ void uart_set_clock();
 /// Test Data reg 
 #define TDR(baseaddr) ((baseaddr)+(0x8c)) 
 
-#define UART0_BASE (0xfe201000)
-#define UART2_BASE (0xfe201400)
-#define UART3_BASE (0xfe201600)
-#define UART4_BASE (0xfe201800)
-#define UART5_BASE (0xfe201a00)
+#define UART0_BASE (MMIO_BASE+0x00201000)
+#define UART2_BASE (MMIO_BASE+0x00201400)
+#define UART3_BASE (MMIO_BASE+0x00201600)
+#define UART4_BASE (MMIO_BASE+0x00201800)
+#define UART5_BASE (MMIO_BASE+0x00201a00)
 
 #define UART0_TX (14)
 #define UART0_RX (15)
