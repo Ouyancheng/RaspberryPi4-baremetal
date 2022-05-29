@@ -36,6 +36,10 @@ if (DEFINED RPI)
     # add_executable(${TARGET} 
     #     ${nes_code_files}
     # )
+    set(nes_code_files 
+        romdata.c 
+        ${nes_code_files}
+    )
     add_library(${TARGET} 
         ${nes_code_files}
     )

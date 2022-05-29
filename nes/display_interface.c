@@ -86,17 +86,26 @@ void display_render_frame(void) {
 #ifdef PLATFORM_RPI 
 void display_init(const char *const title, int width, int height, int scaling_w, int scaling_h) {
     dev_barrier(); 
+    asm volatile ("nop":::"memory"); 
     int ret = framebuffer_init(NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 32, 0); 
+    asm volatile ("nop":::"memory"); 
     printf("width=%d, height=%d pitch=%d\n", width, height, pitch); 
+    asm volatile ("nop":::"memory"); 
     if (ret != 0) {
-        panic("failed to initiate framebuffer!\n"); 
+        printf("failed to initiate framebuffer! ret=%d \n\n", ret); 
+        asm volatile ("nop":::"memory"); 
+        dev_barrier(); 
+        panic("!"); 
     }
+    asm volatile ("nop":::"memory"); 
 }
 void display_exit(void) {
 
 }
 void display_set_pixel(unsigned x, unsigned y, struct rgb color) {
+    asm volatile ("nop":::"memory"); 
     draw_pixel_rgba((uint8_t*)fb, x, y, color.r, color.g, color.b, 0xff); 
+    asm volatile ("nop":::"memory"); 
 }
 void display_render_frame(void) {
 

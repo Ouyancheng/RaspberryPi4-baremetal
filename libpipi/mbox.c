@@ -24,11 +24,13 @@ int mbox_call(unsigned char ch) {
     dev_barrier(); 
     unsigned int r = (((unsigned int)((unsigned long)&mbox)&~0xF) | (ch&0xF));
     dev_barrier(); 
+    asm volatile ("nop":::"memory"); 
     // wait until we can write to the mailbox
     do {
         asm volatile("nop":::"memory");
         dev_barrier();
     } while(*MBOX_STATUS & MBOX_FULL);
+    asm volatile ("nop":::"memory"); 
     // write the address of our message to the mailbox with channel identifier
     *MBOX_WRITE = r;
     asm volatile ("nop" ::: "memory"); 
@@ -47,6 +49,7 @@ int mbox_call(unsigned char ch) {
             // is it a valid successful response?
             return mbox[1]==MBOX_RESPONSE;
         }
+        asm volatile ("nop":::"memory"); 
         // printf("c");
         dev_barrier();
     }

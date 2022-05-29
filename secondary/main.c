@@ -24,6 +24,7 @@ void int_to_dec_str(char *buf, unsigned n) {
     }
     buf[j] = 0; 
 }
+int nes_run(void); 
 int main(void) {
     gpio_set_function(20, GPIO_FUNC_OUTPUT); 
     gpio_set_function(4, GPIO_FUNC_OUTPUT); 
@@ -36,6 +37,9 @@ int main(void) {
     uart_init(UART5_BASE, UART5_TX, UART5_RX, UART5_PIN_FUNC, UART5_PIN_FUNC, 115200); 
 
     printf("hello!!! from secondary program!!!\n"); 
+
+    nes_run(); 
+    rpi_reboot(); 
 
     dev_barrier(); 
     // nes standard 250x240 pixels 

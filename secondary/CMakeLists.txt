@@ -10,9 +10,10 @@ add_executable(${TARGET}.elf
     start.S 
 )
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../libpipi" libpipi)
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../nes" nes)
 # message(STATUS "libpipi_INCLUDE_DIRS=${libpipi_INCLUDE_DIRS}")
 # target_include_directories(${TARGET}.elf PUBLIC libpipi_INCLUDE_DIRS)
-target_link_libraries(${TARGET}.elf PUBLIC libpipi) 
+target_link_libraries(${TARGET}.elf PUBLIC libpipi nes) 
 add_custom_command(TARGET ${TARGET}.elf POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET}.elf" -O binary "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET}.bin"
     COMMENT "Invoking: objcopy")

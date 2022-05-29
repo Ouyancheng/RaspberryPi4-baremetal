@@ -212,8 +212,13 @@ void ppu_render_frame(void) {
 #if RENDER_SPRITE
     unsigned sprite_bank = ((ppu.ctrl & ppu_ctrl_sprite_pattern_addr) != 0); 
     // draw sprite 
-    for (int i = 0; i < 64; ++i) {
-    // for (int i = 63; i >= 0; i -= 1) {
+    /*
+    Sprites with lower OAM indices are drawn in front. 
+        For example, sprite 0 is in front of sprite 1, which is in front of sprite 63.
+    At any given pixel, if the frontmost opaque sprite's priority bit is true (1), an opaque background pixel is drawn in front of it.
+    */
+    // for (int i = 0; i < 64; ++i) {
+    for (int i = 63; i >= 0; i -= 1) {
         ppu_draw_sprite_tile(&ppu, sprite_bank, i); 
     }
 #endif 

@@ -15,57 +15,62 @@ int framebuffer_init(uint32_t physical_width,
                      uint32_t physical_height,
                      uint32_t bits_per_pixel,
                      int doublebuffer) {
+    asm volatile ("nop":::"memory"); 
     mbox[0] = 35 * 4;  // Length of message in bytes
     mbox[1] = MBOX_REQUEST;
-
+    asm volatile ("nop":::"memory"); 
     mbox[2] = MBOX_TAG_SETPHYWH;  // Tag identifier
     mbox[3] = 8;                  // Value size in bytes
     mbox[4] = 0;
     mbox[5] = physical_width;   // Value(width)
     mbox[6] = physical_height;  // Value(height)
-
+    asm volatile ("nop":::"memory"); 
     uint32_t virtual_width = physical_width;
     uint32_t virtual_height = 2 * physical_height; // physical_height; // 
     uint32_t virtual_offset_width = 0;
     uint32_t virtual_offset_height = 0; 
-
+    asm volatile ("nop":::"memory"); 
     mbox[7] = MBOX_TAG_SETVIRTWH;
     mbox[8] = 8;
     mbox[9] = 8;
     mbox[10] = virtual_width;
     mbox[11] = virtual_height;
-
+    asm volatile ("nop":::"memory"); 
     mbox[12] = MBOX_TAG_SETVIRTOFF;
     mbox[13] = 8;
     mbox[14] = 8;
     mbox[15] = virtual_offset_width;   // Value(x)
     mbox[16] = virtual_offset_height;  // Value(y)
-
+    asm volatile ("nop":::"memory"); 
     mbox[17] = MBOX_TAG_SETDEPTH;
     mbox[18] = 4;
     mbox[19] = 4;
     mbox[20] = bits_per_pixel;  // Bits per pixel
-
+    asm volatile ("nop":::"memory"); 
     mbox[21] = MBOX_TAG_SETPXLORDR;
     mbox[22] = 4;
     mbox[23] = 4;
     mbox[24] = 1;  // ARGB
-
+    asm volatile ("nop":::"memory"); 
     mbox[25] = MBOX_TAG_GETFB;
     mbox[26] = 8;
     mbox[27] = 8;
     mbox[28] = 4096;  // FrameBufferInfo.pointer
     mbox[29] = 0;     // FrameBufferInfo.size
-
+    asm volatile ("nop":::"memory"); 
     mbox[30] = MBOX_TAG_GETPITCH;
     mbox[31] = 4;
     mbox[32] = 4;
     mbox[33] = 0;  // Bytes per line
-
+    asm volatile ("nop":::"memory"); 
     mbox[34] = MBOX_TAG_LAST;
     asm volatile ("nop" ::: "memory"); 
     // Check call is successful and we have a pointer with depth 32
-    if (mbox_call(MBOX_CH_PROP) && mbox[20] == 32 && mbox[28] != 0) {
+    int mbox_ret = mbox_call(MBOX_CH_PROP); 
+    asm volatile ("nop" ::: "memory"); 
+    dev_barrier(); 
+    if (mbox_ret && mbox[20] == 32 && mbox[28] != 0) {
+        printf("mbox call success\n"); 
         mbox[28] &= 0x3FFFFFFF;  // Convert GPU address to ARM address
         width = mbox[10];        // Actual physical width
         height = mbox[11]/2;     // Actual physical height
@@ -82,6 +87,7 @@ int framebuffer_init(uint32_t physical_width,
         // printf("fb init success! width = %d height = %d fb1=%p, fb2=%p, fb=%p\n", width, height, fb1, fb2, fb); 
         return 0;
     }
+    printf("mbox call failed, ret=%d\n", mbox_ret);  
     return -1;
 }
 
