@@ -26,16 +26,31 @@ set(nes_code_files
 )
 if (DEFINED RPI)
     message(STATUS "RPI=${RPI}")
-    add_library(${TARGET} 
+    set(LINKER_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/../secondary/link.ld) 
+    include(${CMAKE_CURRENT_LIST_DIR}/../cmake/common.cmake)
+    add_compile_definitions(PLATFORM_RPI=1)
+    set(nes_code_files 
+        ${CMAKE_CURRENT_LIST_DIR}/../secondary/start.S
         ${nes_code_files}
     )
-    target_link_libraries(${TARGET} 
+    add_executable(${TARGET} 
+        ${nes_code_files}
+    )
+    # add_library(${TARGET} 
+    #     ${nes_code_files}
+    # )
+    # set_target_properties(${TARGET}  PROPERTIES PREFIX "")
+    # set_target_properties(${TARGET}  PROPERTIES OUTPUT_NAME ${TARGET})
+    # set_target_properties(${TARGET}  PROPERTIES SUFFIX ".a")
+    target_link_libraries(${TARGET}  
         libpipi
     )
-    add_compile_definitions(PLATFORM_RPI=1)
-    set_target_properties(${TARGET}  PROPERTIES PREFIX "")
-    set_target_properties(${TARGET}  PROPERTIES OUTPUT_NAME ${TARGET})
-    set_target_properties(${TARGET}  PROPERTIES SUFFIX ".a")
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET}" -O binary "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET}.bin"
+        COMMENT "Invoking: objcopy")
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_OBJDUMP} -C -D "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET}"  > "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TARGET}.list"
+        COMMENT "Invoking: objdump")
 else()
     set(nes_INCLUDE_DIRS ${nes_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
     add_executable(${TARGET} ${nes_code_files})

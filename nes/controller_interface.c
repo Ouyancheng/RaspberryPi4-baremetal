@@ -76,3 +76,56 @@ void controller_handle_input(unsigned timeout) {
 
 
 
+#ifdef PLATFORM_RPI 
+void controller_handle_input(unsigned timeout) {
+    int hasdata = uart_has_data(UART0_BASE); 
+    if (!hasdata) {
+        return; 
+    }
+    char c = uart_getc(UART0_BASE); 
+    bool set_key = true; 
+    switch (c) {
+        case 'w': 
+            controller_latch_button(&controller1, controller_button_up, set_key); 
+            // controller_latch_button(&controller2, controller_button_up, set_key); 
+            break; 
+        case 'a': 
+            controller_latch_button(&controller1, controller_button_left, set_key); 
+            // controller_latch_button(&controller2, controller_button_left, set_key); 
+            break; 
+        case 's': 
+            controller_latch_button(&controller1, controller_button_down, set_key); 
+            // controller_latch_button(&controller2, controller_button_down, set_key); 
+            break; 
+        case 'd': 
+            controller_latch_button(&controller1, controller_button_right, set_key); 
+            // controller_latch_button(&controller2, controller_button_right, set_key); 
+            break; 
+        case 'j':
+            controller_latch_button(&controller1, controller_button_button_b, set_key);  
+            // controller_latch_button(&controller2, controller_button_button_b, set_key);  
+            break; 
+        case 'k': 
+            controller_latch_button(&controller1, controller_button_button_a, set_key);  
+            // controller_latch_button(&controller2, controller_button_button_a, set_key);  
+            break; 
+        case ' ': 
+            controller_latch_button(&controller1, controller_button_start, set_key);  
+            // controller_latch_button(&controller2, controller_button_start, set_key);  
+            break; 
+        case '\t': 
+            controller_latch_button(&controller1, controller_button_select, set_key);  
+            // controller_latch_button(&controller2, controller_button_select, set_key);  
+            break; 
+        case 'q': 
+            display_exit(); 
+            exit(0); 
+            break; 
+        default: 
+            break; 
+    }
+}
+#endif 
+
+
+

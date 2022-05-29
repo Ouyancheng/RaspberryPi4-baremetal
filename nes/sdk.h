@@ -16,7 +16,6 @@
 #   include "framebuffer.h"
 #   include "gpio.h"
 #   include "mbox.h"
-#   include "terminal.h"
 #   include "uart.h"
 #   include "uartgetcode.h"
 #   include "util.h"

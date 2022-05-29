@@ -42,4 +42,13 @@ unsigned load_file(uint8_t *target, unsigned target_size, const char *filename) 
 }
 #endif 
 
-
+#ifdef PLATFORM_RPI 
+unsigned load_file(uint8_t *target, unsigned target_size, const char *filename) {
+    uintptr_t addr = uart_get_code((uintptr_t)target); 
+    if (addr > 0) {
+        return 64 * 1024; 
+    } else {
+        return 0; 
+    }
+}
+#endif 

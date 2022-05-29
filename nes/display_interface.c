@@ -1,8 +1,10 @@
 #include "display_interface.h"
 
+uint32_t last_frame_tick; 
+
+
 #ifdef PLATFORM_UNIX 
 struct display_device display; 
-uint32_t last_frame_tick; 
 void display_init(const char *const title, int width, int height, int scaling_w, int scaling_h) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         panic("error initializing SDL: %s\n", SDL_GetError());
@@ -81,7 +83,25 @@ void display_render_frame(void) {
 
 
 
+#ifdef PLATFORM_RPI 
+void display_init(const char *const title, int width, int height, int scaling_w, int scaling_h) {
+    dev_barrier(); 
+    int ret = framebuffer_init(NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 32, 0); 
+    printf("width=%d, height=%d pitch=%d\n", width, height, pitch); 
+    if (ret != 0) {
+        panic("failed to initiate framebuffer!\n"); 
+    }
+}
+void display_exit(void) {
 
+}
+void display_set_pixel(unsigned x, unsigned y, struct rgb color) {
+    draw_pixel_rgba((uint8_t*)fb, x, y, color.r, color.g, color.b, 0xff); 
+}
+void display_render_frame(void) {
+
+}
+#endif 
 
 
 
