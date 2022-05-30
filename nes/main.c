@@ -33,7 +33,7 @@ void test_cpu_rom(const char *rom_path) {
     //     fprintf(c_array_dump, "\n};\n");
     //     fclose(c_array_dump); 
     // }
-    display_init("tile", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 3, 3); 
+    display_init("PPU render window", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 2, 2); 
     struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
     controller_init(&controller1); 
     controller_init(&controller2); 

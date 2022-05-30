@@ -17,9 +17,19 @@ void display_init(const char *const title, int width, int height, int scaling_w,
         height * scaling_h, 
         0
     );
-    // SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal"); 
+    #if defined(__APPLE__)
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal"); 
+    display.renderer = SDL_CreateRenderer(display.window, -1, SDL_RENDERER_ACCELERATED);
+    #elif defined(PLATFORM_WINDOWS)
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d"); 
+    display.renderer = SDL_CreateRenderer(display.window, -1, SDL_RENDERER_ACCELERATED);
+    #elif defined(PLATFORM_UNIX)
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl"); 
+    display.renderer = SDL_CreateRenderer(display.window, -1, SDL_RENDERER_ACCELERATED);
+    #else 
     // display.renderer = SDL_CreateRenderer(display.window, -1, SDL_RENDERER_ACCELERATED);
     display.renderer = SDL_CreateRenderer(display.window, -1, SDL_RENDERER_SOFTWARE);
+    #endif 
     SDL_SetRenderDrawColor(display.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderSetScale(display.renderer, scaling_w, scaling_h); 
     SDL_RenderClear(display.renderer);
@@ -41,6 +51,7 @@ void display_init(const char *const title, int width, int height, int scaling_w,
     display.width = width; 
     display.height = height; 
     display.last_tick = 0; 
+    last_frame_tick = 0; 
     memset((uint8_t*)display.framebuffer, 0, sizeof(struct rgb) * NES_DISPLAY_WIDTH * NES_DISPLAY_HEIGHT); 
 }
 
@@ -66,7 +77,7 @@ void display_render_frame(void) {
     } 
     for (int y = 0; y < display.height; ++y) {
         for (int x = 0; x < display.width; ++x) {
-            pixels[y*pitch + 4*x]   = SDL_ALPHA_OPAQUE; //display.framebuffer[y*display.width+x].a;
+            pixels[y*pitch + 4*x]   = display.framebuffer[y*display.width+x].a; // SDL_ALPHA_OPAQUE;
             pixels[y*pitch + 4*x+1] = display.framebuffer[y*display.width+x].b;
             pixels[y*pitch + 4*x+2] = display.framebuffer[y*display.width+x].g;
             pixels[y*pitch + 4*x+3] = display.framebuffer[y*display.width+x].r;
