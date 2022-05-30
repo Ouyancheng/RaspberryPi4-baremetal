@@ -35,7 +35,7 @@ void cpu_reset(void) {
     cpu.pc = cpu_mem_read16(INTERRUPT_VECTOR_BASE + (uint16_t)cpu_interrupt_reset * UINT16_C(2)); 
 }
 void cpu_run(void) {
-    cpu_run_with_callback(do_nothing); 
+    cpu_run_with_callback(NULL); 
 }
 
 void cpu_load_program_and_run(uint8_t *program, size_t length, unsigned at) {

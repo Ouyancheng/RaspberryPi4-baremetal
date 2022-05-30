@@ -449,7 +449,9 @@ void cpu_run_with_callback(void(*func)(void)) {
         if (bus_poll_nmi()) {
             raise_interrupt(cpu_interrupt_nmi); 
         }
-        func(); 
+        if (func) {
+            func(); 
+        }
         uint8_t opcode = cpu_mem_read(cpu.pc); 
         // printf("step pc = %04x opcode=0x%02x\n", cpu.pc, opcode); 
         cpu.pc += 1; 
