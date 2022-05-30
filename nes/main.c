@@ -3,6 +3,7 @@
 #include "cpu_debug.h"
 #include "ppu.h"
 #include "controller.h"
+#include "nes_state.h"
 #include "display_interface.h"
 #include "controller_interface.h" 
 void nmi_callback_render_frame(void) {
@@ -22,22 +23,24 @@ void test_cpu_rom(const char *rom_path) {
         test_mode = true; 
         rom_path = "../testroms/nestest.nes"; 
     }
-    unsigned romsize = load_file((uint8_t*)rom_bytes, 1048576, rom_path); 
+    nes_memory_init(); 
+    unsigned romsize = load_file((uint8_t*)system_memory.rom_binary, 1048576, rom_path); 
     // if (romsize) {
     //     FILE *c_array_dump = fopen("romdata.c", "wb"); 
     //     fprintf(c_array_dump, "unsigned romsize = %d;\n", romsize); 
     //     fprintf(c_array_dump, "char romdata[] = {\n    ");
     //     for (unsigned i = 0; i < romsize; ++i) {
-    //         fprintf(c_array_dump , "0x%02x, ", rom_bytes[i]); 
+    //         fprintf(c_array_dump , "0x%02x, ", system_memory.rom_binary[i]); 
     //     }
     //     fprintf(c_array_dump, "\n};\n");
     //     fclose(c_array_dump); 
     // }
     display_init("PPU render window", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 2, 2); 
-    struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
+    load_rom((uint8_t*)system_memory.rom_binary, romsize); 
     controller_init(&controller1); 
     controller_init(&controller2); 
-    bus_init(rom, NULL); 
+    bus_init(); 
+    ppu_init(); 
     /// 
     // printf("romsize = %zu, prgsize = %zu, chrsize = %zu\n", romsize, rom.prg_rom_size, rom.chr_rom_size); 
     // for (int b = 0; b <= 0; ++b) {
@@ -67,7 +70,7 @@ void test_cpu_rom(const char *rom_path) {
     }
     cpu_init(); 
     cpu_reset(); 
-    cpu_run(); 
+    cpu_run();
     // cpu_run_with_callback(dump_cpu);
     display_exit(); 
     printf("Done!!!\n"); 
@@ -90,64 +93,32 @@ extern unsigned romsize;
 extern char romdata[]; 
 int nes_run(void) {
     printf("hello!!! please close this session and upload a rom file in another session~\n"); 
-    unsigned romsize = load_file((uint8_t*)rom_bytes, 1048576, NULL); 
+    nes_memory_init(); 
+    unsigned romsize = load_file((uint8_t*)system_memory.rom_binary, 1048576, NULL); 
     if (!romsize) {
         panic("failed to get rom!\n"); 
     }
-    // uart_init(UART5_BASE, UART5_TX, UART5_RX, UART5_PIN_FUNC, UART5_PIN_FUNC, 115200); 
     display_init("tile", NES_DISPLAY_WIDTH, NES_DISPLAY_HEIGHT, 3, 3); 
     printf("framebuffer initialized!\n"); 
-    // printf("rom_bytes = %p, romdata = %p\n", (uint8_t*)rom_bytes, (uint8_t*)romdata);
+    // printf("system_memory.rom_binary = %p, romdata = %p\n", (uint8_t*)system_memory.rom_binary, (uint8_t*)romdata);
     // for (unsigned i = 0; i < romsize; ++i) {
     //     // printf("%u\n", i); 
-    //     rom_bytes[i] = (uint8_t)romdata[i]; 
+    //     system_memory.rom_binary[i] = (uint8_t)romdata[i]; 
     //     asm volatile ("nop":::"memory"); 
     //     dev_barrier(); 
     // }
     printf("about to install rom!\n"); 
-    struct nes_rom rom = load_rom((uint8_t*)rom_bytes, romsize); 
+    load_rom((uint8_t*)system_memory.rom_binary, romsize); 
     printf("rom mapper = %u\n", (unsigned)rom.mapper); 
     dev_barrier();
     printf("about to initiate bus\n"); 
-    dev_barrier();
-    printf("memsetting %p\n", (uint8_t*)bus.cpu_ram);
-    dev_barrier(); 
-    // memset((uint8_t*)bus.cpu_ram, 0, CPU_RAM_SIZE); 
-    for (unsigned i = 0; i < CPU_RAM_SIZE; ++i) {
-        // printf("%u\n", i); 
-        bus.cpu_ram[i] = 0; 
-        asm volatile ("nop":::"memory"); 
-        dev_barrier(); 
-    }
-    dev_barrier(); 
-    printf("memset success!\n"); dev_barrier(); 
-    bus.rom.prg_rom = rom.prg_rom;
-    printf("prg success!\n"); dev_barrier(); 
-    bus.rom.chr_rom = rom.chr_rom; 
-    printf("chr success!\n"); dev_barrier(); 
-    bus.rom.prg_rom_size = rom.prg_rom_size; 
-    printf("prgs success!\n"); dev_barrier(); 
-    bus.rom.chr_rom_size = rom.chr_rom_size; 
-    printf("chrs success!\n"); dev_barrier(); 
-    bus.rom.mapper = rom.mapper; 
-    printf("mapper success!\n"); dev_barrier(); 
-    bus.rom.mirroring = rom.mirroring; 
-    printf("mirror success!\n"); dev_barrier(); 
-    printf("rom success!\n"); dev_barrier(); 
-    bus.nmi_callback = 0; 
-    printf("nmi success!\n"); dev_barrier(); 
-    bus.cycles = 0; 
-    printf("cycle success!\n"); dev_barrier(); 
-    printf("about to initialize PPU\n"); dev_barrier(); 
-    dev_barrier(); 
-    // ppu_init(bus.rom.chr_rom, bus.rom.chr_rom_size, bus.rom.mirroring); 
-    ppu.chr_rom = rom.chr_rom; 
-    ppu.chr_rom_size = rom.chr_rom_size; 
-    ppu.mirror = rom.mirroring; 
     asm volatile ("nop":::"memory"); 
-    printf("ppu initialized\n"); dev_barrier(); 
-    dev_barrier(); 
+    dev_barrier();
+    bus_init();  
+    asm volatile ("nop":::"memory"); 
     printf("bus initiated!!!\n"); dev_barrier(); 
+    ppu_init(); 
+    printf("ppu initialized\n"); dev_barrier(); 
     dev_barrier(); 
     asm volatile ("nop":::"memory"); 
     if (rom.mapper > 0) {

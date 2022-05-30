@@ -1,16 +1,13 @@
 #include "bus.h"
 #include "ppu.h"
 #include "controller.h"
+#include "nes_state.h"
 #include "controller_interface.h"
 #include "display_interface.h"
-struct nes_bus bus; 
-
-void bus_init(struct nes_rom bus_rom, void(*nmi_callback)(void)) {
-    memset((uint8_t*)bus.cpu_ram, 0, CPU_RAM_SIZE); 
-    bus.rom = bus_rom;
-    bus.nmi_callback = nmi_callback; 
+void bus_init(void) {
+    bus.cpu_ram = (uint8_t*)(system_memory.cpu_ram); 
+    bus.prg_rom = rom.prg_rom; 
     bus.cycles = 0; 
-    ppu_init(bus.rom.chr_rom, bus.rom.chr_rom_size, bus.rom.mirroring); 
 }
 uint8_t bus_read(uint16_t addr) {
     if (0x0000 <= addr && addr < 0x2000) {
@@ -148,10 +145,10 @@ void bus_write(uint16_t addr, uint8_t value) {
 
 uint8_t read_prg_rom(uint16_t addr) {
     addr -= UINT16_C(0x8000);
-    if ((bus.rom.prg_rom_size == 0x4000) && (addr >= 0x4000)) {
+    if ((rom.prg_rom_size == 0x4000) && (addr >= 0x4000)) {
         addr %= 0x4000; 
     }
-    return bus.rom.prg_rom[addr]; 
+    return bus.prg_rom[addr]; 
 }
 
 void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
@@ -161,7 +158,6 @@ void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
     ppu_tick_cycles(cpu_cycles * 3); 
     unsigned current_nmi = ppu.nmi_raised; 
     if (!prev_nmi && current_nmi) {
-        // bus.nmi_callback(); 
         ppu_render_frame(); 
         controller_handle_input(0); 
         display_delay_for_framerate(); 
@@ -170,7 +166,6 @@ void bus_catch_up_cpu_cycles(unsigned cpu_cycles) {
 bool bus_poll_nmi(void) {
     if (ppu.nmi_raised) {
         ppu.nmi_raised = false; 
-        // bus.nmi_callback(); 
         return true; 
     } else {
         return false; 

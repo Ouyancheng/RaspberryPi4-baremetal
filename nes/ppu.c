@@ -1,15 +1,14 @@
 #include "ppu.h"
+#include "nes_state.h"
 
-struct ppu_device ppu; 
 
 
-void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror) {
-    ppu.chr_rom = chr_rom; 
-    ppu.chr_rom_size = chr_rom_size; 
-    ppu.mirror = mirror; 
-    memset((uint8_t*)ppu.oam_data, 0, 256); 
-    memset((uint8_t*)ppu.palette_table, 0, 32); 
-    memset((uint8_t*)ppu.vram, 0, 2048); 
+void ppu_init(void) {
+    ppu.chr_rom = rom.chr_rom; 
+    ppu.mirror = rom.mirroring; 
+    ppu.palette_table = (uint8_t*)(system_memory.palette_table); 
+    ppu.vram = (uint8_t*)(system_memory.vram); 
+    ppu.oam_data = (uint8_t*)(system_memory.oam_data); 
     ppu.addr.value = 0; 
     ppu.addr.reading_lo = 0; 
     ppu.scroll.x = 0; 
@@ -49,9 +48,9 @@ uint16_t ppu_mirror_vram_addr(uint16_t addr) {
     unsigned index = (addr & 0b10111111111111) - 0x2000; // 0x2FFF
     unsigned quadrant = index / 0x400; // 2000, 2400, 2800, 2C00  
     switch (ppu.mirror) {
-        case rom_mirror_vertical:
+        case nametable_mirror_vertical:
             return (quadrant >= 2) ? (index - 0x800) : (index); 
-        case rom_mirror_horizontal: 
+        case nametable_mirror_horizontal: 
             switch (quadrant) {
                 case 1: 
                 case 2: 

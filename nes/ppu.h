@@ -1,8 +1,8 @@
 #pragma once 
 
 #include "sdk.h"
-#include "rom.h"
 #include "ppu_render.h"
+
 struct ppu_reg_addr {
     uint16_t value; 
     unsigned reading_lo; 
@@ -12,13 +12,17 @@ struct ppu_reg_scroll {
     uint8_t y; 
     unsigned reading_y; 
 };
-struct ppu_device {
+enum nametable_mirror {
+    nametable_mirror_vertical, 
+    nametable_mirror_horizontal, 
+    nametable_mirror_four_screen 
+};
+struct nes_ppu {
     uint8_t *chr_rom; 
-    size_t chr_rom_size; 
-    uint8_t palette_table[32]; 
-    uint8_t vram[2048]; 
-    uint8_t oam_data[256]; 
-    enum rom_mirror mirror; 
+    uint8_t *palette_table; 
+    uint8_t *vram; 
+    uint8_t *oam_data; 
+    enum nametable_mirror mirror; 
     struct ppu_reg_addr addr; 
     struct ppu_reg_scroll scroll; 
     uint8_t ctrl; 
@@ -31,7 +35,7 @@ struct ppu_device {
     unsigned nmi_raised; 
 };
 
-extern struct ppu_device ppu; 
+extern struct nes_ppu ppu; 
 
 enum ppu_control_flags {
     ppu_ctrl_nametable1              = 0b00000001, 
@@ -66,7 +70,7 @@ enum ppu_status_flags {
     ppu_status_vblank_started  = 0b10000000 
 };
 /// initiates PPU 
-void ppu_init(uint8_t *chr_rom, size_t chr_rom_size, enum rom_mirror mirror); 
+void ppu_init(void); 
 
 /// write to the address register of PPU 
 void ppu_write_addr(uint8_t data); 

@@ -16,7 +16,7 @@ enum cpuflags {
 
 #define STACK_OFFSET UINT16_C(0x0100) 
 #define SP_RESET 0xFD 
-struct cpustate {
+struct nes_cpu6502 {
     uint8_t  a; 
     uint8_t  x; 
     uint8_t  y; 
@@ -28,7 +28,7 @@ struct cpustate {
     unsigned delayed_cycles; 
 };
 
-extern struct cpustate cpu; 
+extern struct nes_cpu6502 cpu; 
 
 static inline uint8_t cpu_mem_read(uint16_t addr) {
     // return nes_memory[addr]; 

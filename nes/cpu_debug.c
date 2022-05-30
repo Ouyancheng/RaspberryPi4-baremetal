@@ -97,7 +97,7 @@ void dump_cpu(void) {
 }
 void cpu_dump_state(void) {
     printf(
-        "cpustate = {\n"
+        "nes_cpu6502 = {\n"
         "    .a = %02x,\n"
         "    .x = %02x,\n"
         "    .y = %02x,\n"

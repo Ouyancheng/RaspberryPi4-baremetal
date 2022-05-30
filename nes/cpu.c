@@ -1,6 +1,6 @@
 #include "cpu.h"
 #include "cpu_exec.h"
-struct cpustate cpu; 
+
 
 
 struct cpu_interrupt_info irq_info[3] = {

@@ -20,8 +20,9 @@ set(nes_code_files
     cpu_debug.c 
     ppu.c 
     ppu_render.c 
-    display_interface.c 
+    nes_state.c 
     controller.c 
+    display_interface.c 
     controller_interface.c 
 )
 if (DEFINED RPI)

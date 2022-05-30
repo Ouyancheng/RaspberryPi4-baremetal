@@ -5,9 +5,9 @@ bool ppu_tick_cycles(unsigned ppu_cycles);
 
 /// render a frame 
 void ppu_render_frame(void); 
-struct ppu_device; 
+struct nes_ppu; 
 
-void ppu_draw_background_tile(struct ppu_device *ppu, unsigned bank, unsigned tile_idx, int tile_x, int tile_y);  
+void ppu_draw_background_tile(struct nes_ppu *ppu, unsigned bank, unsigned tile_idx, int tile_x, int tile_y);  
 void ppu_get_palette_for_background_tile(uint8_t *palette_color_indices, unsigned tile_x, unsigned tile_y, uint8_t *attribute_table); 
 void ppu_get_palette_for_sprite_tile(uint8_t *palette_color_indices, unsigned palette_index); 
 /// reports whether sprite 0 has already rendered 

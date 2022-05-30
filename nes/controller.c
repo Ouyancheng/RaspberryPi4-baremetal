@@ -36,8 +36,3 @@ void controller_latch_button(struct nes_controller *ctl, enum controller_button 
 }
 
 
-
-struct nes_controller controller1; 
-
-struct nes_controller controller2; 
-

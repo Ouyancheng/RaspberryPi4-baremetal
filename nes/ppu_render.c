@@ -80,7 +80,7 @@ void ppu_get_palette_for_sprite_tile(uint8_t *palette_color_indices, unsigned pa
 
 
 
-void ppu_draw_background_tile(struct ppu_device *ppu, unsigned bank, unsigned tile_idx, int tile_x, int tile_y) {
+void ppu_draw_background_tile(struct nes_ppu *ppu, unsigned bank, unsigned tile_idx, int tile_x, int tile_y) {
     uint8_t *tile = ppu->chr_rom + (bank*0x1000 + tile_idx * 16); 
     uint8_t background_palette[4]; 
     ppu_get_palette_for_background_tile(background_palette, tile_x, tile_y, (uint8_t*)ppu->vram); 
@@ -98,7 +98,7 @@ void ppu_draw_background_tile(struct ppu_device *ppu, unsigned bank, unsigned ti
     }
 }
 
-void ppu_draw_sprite_tile(struct ppu_device *ppu, unsigned sprite_bank, unsigned i_th_sprite) {
+void ppu_draw_sprite_tile(struct nes_ppu *ppu, unsigned sprite_bank, unsigned i_th_sprite) {
     unsigned i = i_th_sprite * 4; 
     unsigned sprite_tile_idx = (unsigned)ppu->oam_data[i+1]; 
     /// another strange thing... 
@@ -158,7 +158,7 @@ void ppu_render_frame(void) {
             secondary_nametable = primary_nametable + 0x0400; 
             break; 
         case 0x2400:
-            if (ppu.mirror == rom_mirror_vertical) {
+            if (ppu.mirror == nametable_mirror_vertical) {
                 secondary_nametable = (uint8_t*)ppu.vram; 
                 primary_nametable = secondary_nametable + 0x0400; 
             } else {
@@ -167,7 +167,7 @@ void ppu_render_frame(void) {
             }
             break; 
         case 0x2800:
-            if (ppu.mirror == rom_mirror_vertical) {
+            if (ppu.mirror == nametable_mirror_vertical) {
                 primary_nametable = (uint8_t*)ppu.vram; 
                 secondary_nametable = primary_nametable + 0x0400; 
             } else {
