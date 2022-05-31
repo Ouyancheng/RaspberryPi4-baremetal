@@ -64,7 +64,7 @@ void ppu_get_palette_for_background_tile(uint8_t *palette_color_indices, unsigne
     uint8_t block_attribute = attribute_table[attribute_table_index]; // ppu.vram[960 + attribute_table_index]; 
     unsigned attr_2bit = ((block_attribute >> ((tile_x % 4 / 2)*2)) >> ((tile_y % 4 / 2)*4)) & 0b11; 
     unsigned palette_index = (unsigned)attr_2bit * 4 + 1; 
-    palette_color_indices[0] = ppu.palette_table[0]; 
+    palette_color_indices[0] = 0; // ppu.palette_table[0]; 
     palette_color_indices[1] = ppu.palette_table[palette_index]; 
     palette_color_indices[2] = ppu.palette_table[palette_index+1]; 
     palette_color_indices[3] = ppu.palette_table[palette_index+2]; 
@@ -133,9 +133,9 @@ void ppu_draw_sprite_tile(struct nes_ppu *ppu, unsigned sprite_bank, unsigned i_
             if (i_th_sprite > bgpixel.a) {
                 continue; 
             } 
-            else if (behind_background) {
-                bgpixel.r = bgpixel.g = bgpixel.b = 0xFF;
-                bgpixel.a = 0; 
+            else if (behind_background && bgpixel.a < 0xFF) {
+                // bgpixel.r = bgpixel.g = bgpixel.b = 0xFF;
+                bgpixel.a = i_th_sprite; 
                 display_set_pixel(xcoord, ycoord, bgpixel); 
             } 
             else {
@@ -307,8 +307,16 @@ void ppu_render_nametable_with_scroll(
                 upper >>= 1;
                 lower >>= 1;
                 struct rgb color; 
-                color = system_palette[background_palette[value]]; 
-                color.a = 90; // 90 = background 
+                uint8_t palette_index = background_palette[value]; 
+                if (!palette_index) {
+                    color = system_palette[ppu.palette_table[0]]; 
+                    color.a = 0xff; 
+                    // 0xFF = transparent background 
+                } else {
+                    color = system_palette[palette_index]; 
+                    color.a = 90; // 90 = background 
+                }
+                
                 unsigned xcoord = (unsigned)tile_x * 8 + (unsigned)x; 
                 unsigned ycoord = (unsigned)tile_y * 8 + (unsigned)y; 
                 if (viewport_upperleft_x <= xcoord && xcoord < viewport_bottomright_x && 
