@@ -69,6 +69,14 @@ void display_set_pixel(unsigned x, unsigned y, struct rgb color) {
     }
 }
 
+struct rgb display_get_pixel(unsigned x, unsigned y) {
+    if (x < display.width && y < display.height) {
+        return display.framebuffer[y*display.width + x]; 
+    }
+    struct rgb blank = {0xff, 0xff, 0xff, 0xff}; 
+    return blank; 
+}
+
 void display_render_frame(void) {
     uint8_t *pixels;
     int pitch; 
@@ -77,7 +85,7 @@ void display_render_frame(void) {
     } 
     for (int y = 0; y < display.height; ++y) {
         for (int x = 0; x < display.width; ++x) {
-            pixels[y*pitch + 4*x]   = display.framebuffer[y*display.width+x].a; // SDL_ALPHA_OPAQUE;
+            pixels[y*pitch + 4*x]   = SDL_ALPHA_OPAQUE;  // display.framebuffer[y*display.width+x].a;
             pixels[y*pitch + 4*x+1] = display.framebuffer[y*display.width+x].b;
             pixels[y*pitch + 4*x+2] = display.framebuffer[y*display.width+x].g;
             pixels[y*pitch + 4*x+3] = display.framebuffer[y*display.width+x].r;
@@ -117,6 +125,11 @@ void display_set_pixel(unsigned x, unsigned y, struct rgb color) {
     asm volatile ("nop":::"memory"); 
     draw_pixel_rgba((uint8_t*)fb, x, y, color.r, color.g, color.b, 0xff); 
     asm volatile ("nop":::"memory"); 
+}
+struct rgb display_get_pixel(unsigned x, unsigned y) {
+    /// TODO 
+    struct rgb blank = {0xff, 0xff, 0xff, 0xff}; 
+    return blank; 
 }
 void display_render_frame(void) {
 

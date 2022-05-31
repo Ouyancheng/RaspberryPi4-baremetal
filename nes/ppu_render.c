@@ -106,10 +106,7 @@ void ppu_draw_sprite_tile(struct nes_ppu *ppu, unsigned sprite_bank, unsigned i_
     unsigned sprite_tile_y = (unsigned)ppu->oam_data[i]; 
     bool flip_vertical = (((ppu->oam_data[i+2] >> 7) & 1)); 
     bool flip_horizontal = (((ppu->oam_data[i+2] >> 6) & 1)); 
-    // bool behind_background = (((ppu->oam_data[i+2] >> 5) & 1)); 
-    // if (behind_background) { 
-    //     return; 
-    // }
+    bool behind_background = (((ppu->oam_data[i+2] >> 5) & 1)); 
     unsigned palette_index = ppu->oam_data[i+2] & 0b11; 
     uint8_t sprite_palette_colors[4]; 
     ppu_get_palette_for_sprite_tile((uint8_t*)sprite_palette_colors, palette_index); 
@@ -124,12 +121,26 @@ void ppu_draw_sprite_tile(struct nes_ppu *ppu, unsigned sprite_bank, unsigned i_
             struct rgb color; 
             if (val == 0) {
                 continue; 
-            } else {
+            } 
+            else {
                 color = system_palette[sprite_palette_colors[val]]; 
+                color.a = i_th_sprite; 
             }
             unsigned xcoord = (flip_horizontal ? (sprite_tile_x + 7 - x) : sprite_tile_x + x); 
             unsigned ycoord = (flip_vertical ? (sprite_tile_y + 7 - y) : sprite_tile_y + y); 
-            display_set_pixel(xcoord, ycoord, color); 
+            struct rgb bgpixel = display_get_pixel(xcoord, ycoord); 
+            // the sprite is behind 
+            if (i_th_sprite > bgpixel.a) {
+                continue; 
+            } 
+            else if (behind_background) {
+                bgpixel.r = bgpixel.g = bgpixel.b = 0xFF;
+                bgpixel.a = 0; 
+                display_set_pixel(xcoord, ycoord, bgpixel); 
+            } 
+            else {
+                display_set_pixel(xcoord, ycoord, color); 
+            }
         }
     }
 }
@@ -220,8 +231,8 @@ void ppu_render_frame(void) {
         For example, sprite 0 is in front of sprite 1, which is in front of sprite 63.
     At any given pixel, if the frontmost opaque sprite's priority bit is true (1), an opaque background pixel is drawn in front of it.
     */
-    // for (int i = 0; i < 64; ++i) {
-    for (int i = 63; i >= 0; i -= 1) {
+    for (int i = 0; i < 64; ++i) {
+    // for (int i = 63; i >= 0; i -= 1) {
         ppu_draw_sprite_tile(&ppu, sprite_bank, i); 
     }
 #endif 
@@ -297,6 +308,7 @@ void ppu_render_nametable_with_scroll(
                 lower >>= 1;
                 struct rgb color; 
                 color = system_palette[background_palette[value]]; 
+                color.a = 90; // 90 = background 
                 unsigned xcoord = (unsigned)tile_x * 8 + (unsigned)x; 
                 unsigned ycoord = (unsigned)tile_y * 8 + (unsigned)y; 
                 if (viewport_upperleft_x <= xcoord && xcoord < viewport_bottomright_x && 

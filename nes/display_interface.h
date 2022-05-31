@@ -26,6 +26,7 @@ extern struct display_device display;
 void display_init(const char *const title, int width, int height, int scaling_w, int scaling_h); 
 void display_exit(void); 
 void display_set_pixel(unsigned x, unsigned y, struct rgb color); 
+struct rgb display_get_pixel(unsigned x, unsigned y); 
 void display_render_frame(void); 
 void display_delay_for_framerate(void); 
 extern uint32_t last_frame_tick; 
