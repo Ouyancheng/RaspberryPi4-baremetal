@@ -299,6 +299,8 @@ void ppu_render_nametable_with_scroll(
         uint8_t *tile = ppu.chr_rom + (bank*0x1000 + tile_idx * 16); 
         uint8_t background_palette[4]; 
         ppu_get_palette_for_background_tile(background_palette, tile_x, tile_y, attribute_table); 
+        // uint16_t vram_offset = nametable + i - ppu.vram; 
+        // bool nobackdropinforcedblanking = (0x3F00 <= vram_offset && vram_offset <= 0x3FFF); 
         for (int y = 0; y < 8; ++y) {
             uint8_t upper = tile[y];
             uint8_t lower = tile[y + 8];
@@ -310,9 +312,10 @@ void ppu_render_nametable_with_scroll(
                 uint8_t palette_index = background_palette[value]; 
                 if (!palette_index) {
                     color = system_palette[ppu.palette_table[0]]; 
-                    color.a = 0xff; 
-                    // 0xFF = transparent background 
-                } else {
+                    color.a = 0xff; // 0xFF = transparent background 
+                } 
+                else 
+                {
                     color = system_palette[palette_index]; 
                     color.a = 90; // 90 = background 
                 }
