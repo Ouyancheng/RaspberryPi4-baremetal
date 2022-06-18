@@ -38,7 +38,7 @@ if (DEFINED RPI)
     #     ${nes_code_files}
     # )
     set(nes_code_files 
-        romdata.c 
+        # romdata.c 
         ${nes_code_files}
     )
     add_library(${TARGET} 
